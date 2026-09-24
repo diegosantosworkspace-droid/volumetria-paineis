@@ -84,3 +84,20 @@
 [2026-09-24 03:25:40]   git:  create mode 100644 sp8/public/public/sounds/mario-pipe.mp3
 [2026-09-24 03:25:47] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:144 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      8125662..49e7d6b  HEAD -> main
 [2026-09-24 03:25:47] publicar_site: concluido com sucesso.
+[2026-09-24 03:26:44]   git: [main b22c1b4] painels atualizados em 24/09/2026 03:26:44 via publicar_site
+[2026-09-24 03:26:44]   git:  14 files changed, 36 insertions(+), 1 deletion(-)
+[2026-09-24 03:26:44]   git:  delete mode 100644 gu/public/public/images/rdc-truck.png
+[2026-09-24 03:26:44]   git:  delete mode 100644 gu/public/public/sounds/mario-pipe.mp3
+[2026-09-24 03:26:44]   git:  delete mode 100644 sp2/public/public/public/images/rdc-truck.png
+[2026-09-24 03:26:44]   git:  delete mode 100644 sp2/public/public/public/sounds/mario-pipe.mp3
+[2026-09-24 03:26:44]   git:  delete mode 100644 sp4/public/public/public/images/rdc-truck.png
+[2026-09-24 03:26:44]   git:  delete mode 100644 sp4/public/public/public/sounds/mario-pipe.mp3
+[2026-09-24 03:26:44]   git:  delete mode 100644 sp5/public/public/public/images/rdc-truck.png
+[2026-09-24 03:26:44]   git:  delete mode 100644 sp5/public/public/public/sounds/mario-pipe.mp3
+[2026-09-24 03:26:44]   git:  delete mode 100644 sp6/public/public/public/images/rdc-truck.png
+[2026-09-24 03:26:44]   git:  delete mode 100644 sp6/public/public/public/sounds/mario-pipe.mp3
+[2026-09-24 03:26:44]   git:  delete mode 100644 sp8/public/public/public/images/rdc-truck.png
+[2026-09-24 03:26:44]   git:  delete mode 100644 sp8/public/public/public/sounds/mario-pipe.mp3
+[2026-09-24 03:26:48] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:146 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      49e7d6b..b22c1b4  HEAD -> main
+[2026-09-24 03:26:48] publicar_site: concluido com sucesso.
+[2026-09-24 03:27:27] publicar_site: nada mudou; sem push.
