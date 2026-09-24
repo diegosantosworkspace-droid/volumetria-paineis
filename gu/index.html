@@ -28,6 +28,12 @@
             margin: 0 auto;
         }
 
+        /* Escala confortavel em telas grandes: painel ~75% (mais compacto).
+           Em telas pequenas (celular) mantem o layout responsivo normal. */
+        @media (min-width: 1100px) {
+            body { zoom: 0.78; }
+        }
+
         /* HEADER */
         .header {
             display: flex;
@@ -2709,7 +2715,7 @@
                 <div class="subtitle">体积配送</div>
                 <div class="rdc-header">
                     <div class="rdc-visual">
-                        <img src="/public/images/rdc-truck.png" alt="Operação logística" class="rdc-truck" />
+                        <img src="public/images/rdc-truck.png" alt="Operação logística" class="rdc-truck" />
                     </div>
                     <div class="rdc-info">
                         <div class="rdc-code">SP1</div>
@@ -2785,7 +2791,7 @@
                 <div class="card metric-card" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="rdc-header">
                         <div class="rdc-visual">
-                            <img src="/public/images/rdc-truck.png" alt="Operação logística" class="rdc-truck" />
+<img src="public/images/rdc-truck.png" alt="Operação logística" class="rdc-truck" />
                         </div>
                         <div class="rdc-info">
                             <div class="rdc-code">SP1</div>

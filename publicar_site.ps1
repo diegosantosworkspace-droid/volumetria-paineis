@@ -49,10 +49,11 @@ if ($ApenasSeMudou) {
     if (-not $mudou) { Log 'publicar_site: nada mudou; sem push.'; exit 0 }
 }
 
-# --- Copia dashboard (como index.html) + dados de cada RDC ---
+# --- Copia dashboard (como index.html) + dados + recursos publicos de cada RDC ---
 foreach ($r in $rdcs) {
     $dash = Join-Path $r.dir 'volumetria_dashboard.html'
     $json = Join-Path $r.dir 'dados_volumetria.json'
+    $pub  = Join-Path $r.dir 'public'
     $dest = Join-Path $site $r.cod
     New-Item -ItemType Directory -Path $dest -Force | Out-Null
     if (Test-Path $dash) {
@@ -60,6 +61,9 @@ foreach ($r in $rdcs) {
     }
     if (Test-Path $json) {
         Copy-Item $json (Join-Path $dest 'dados_volumetria.json') -Force
+    }
+    if (Test-Path $pub) {
+        Copy-Item $pub (Join-Path $dest 'public') -Recurse -Force
     }
 }
 
