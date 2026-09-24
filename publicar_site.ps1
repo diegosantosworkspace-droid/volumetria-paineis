@@ -21,7 +21,7 @@ function Log([string]$m) {
 
 # RDC -> pasta origem (dashboard + json). Só publica RDC que tem dados.
 $rdcs = @(
-    @{cod='gu';  dir=Join-Path $desk 'VOLUMETRIA';     cidade='Guarulhos'},
+    @{cod='sp1'; dir=Join-Path $desk 'VOLUMETRIA';     cidade='Guarulhos'},
     @{cod='sp2'; dir=Join-Path $desk 'VOLUMETRIA_SP2'; cidade='Barueri'},
     @{cod='sp4'; dir=Join-Path $desk 'VOLUMETRIA_SP4'; cidade='Bauru'},
     @{cod='sp5'; dir=Join-Path $desk 'VOLUMETRIA_SP5'; cidade='Ribeirao Preto'},
