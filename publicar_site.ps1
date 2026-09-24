@@ -63,7 +63,9 @@ foreach ($r in $rdcs) {
         Copy-Item $json (Join-Path $dest 'dados_volumetria.json') -Force
     }
     if (Test-Path $pub) {
-        Copy-Item $pub (Join-Path $dest 'public') -Recurse -Force
+        $destPub = Join-Path $dest 'public'
+        New-Item -ItemType Directory -Path $destPub -Force | Out-Null
+        Copy-Item (Join-Path $pub '*') $destPub -Recurse -Force
     }
 }
 
