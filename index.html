@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Volumetria - Paineis dos RDCs</title>
+<style>
+  body { font-family: Segoe UI, Arial, sans-serif; background:#0d1420; color:#dfe8f2; margin:0; min-height:100vh; }
+  header { background:#152030; padding:26px 24px; border-bottom:3px solid #FFDD00; }
+  h1 { color:#FFDD00; font-size:28px; margin:0; }
+  p.meta { color:#9db8d4; margin:6px 0 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; padding:26px 24px; }
+  .card { background:#152030; border:1px solid #2c3b4f; border-radius:10px; padding:18px; text-align:center; transition:transform .12s, box-shadow .12s; }
+  .card:hover { transform:translateY(-3px); box-shadow:0 6px 18px rgba(0,0,0,.45); border-color:#FFDD00; }
+  .card .cod { font-size:34px; font-weight:800; color:#FFDD00; }
+  .card .cidade { color:#9db8d4; margin-top:4px; font-size:14px; }
+  .card .status { margin-top:10px; font-size:13px; color:#63e08c; }
+  .card .total { margin-top:8px; font-size:15px; color:#FFDD00; }
+  .card .upd { margin-top:2px; font-size:12px; color:#5f7894; }
+  .card a { display:inline-block; margin-top:14px; padding:9px 22px; border:1px solid #FFDD00; color:#FFDD00; border-radius:6px; text-decoration:none; font-weight:700; font-size:14px; }
+  .card a:hover { background:#FFDD00; color:#0d1420; }
+  footer { padding:14px 24px; color:#5f7894; font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>VOLUMETRIA &middot; PAINEIS</h1>
+  <p class="meta">Acesso externo aos paineis de volumetria dos RDCs - atualiza automaticamente a cada processamento.</p>
+</header>
+<div class="grid">
+<div class="card"><div class="cod">GU</div><div class="cidade">Guarulhos</div><div class="status">Painel online</div><div class="total">total <b>446.524</b></div><div class="upd">2026-09-24 01:52:20</div><a href="gu/">ABRIR</a></div><div class="card"><div class="cod">SP2</div><div class="cidade">Barueri</div><div class="status">Painel online</div><div class="total">total <b>65.404</b></div><div class="upd">2026-09-24 01:15:01</div><a href="sp2/">ABRIR</a></div><div class="card"><div class="cod">SP4</div><div class="cidade">Bauru</div><div class="status">Painel online</div><div class="total">total <b>20.577</b></div><div class="upd">2026-09-14 19:59:23</div><a href="sp4/">ABRIR</a></div><div class="card"><div class="cod">SP5</div><div class="cidade">Ribeirao Preto</div><div class="status">Painel online</div><div class="total">total <b>0</b></div><div class="upd">2026-09-14 20:12:57</div><a href="sp5/">ABRIR</a></div><div class="card"><div class="cod">SP6</div><div class="cidade">Hortolandia</div><div class="status">Painel online</div><div class="total">total <b>0</b></div><div class="upd">2026-09-14 20:31:59</div><a href="sp6/">ABRIR</a></div><div class="card"><div class="cod">SP8</div><div class="cidade">Guarulhos</div><div class="status">Painel online</div><div class="total">total <b>32.472</b></div><div class="upd">2026-09-23 19:05:54</div><a href="sp8/">ABRIR</a></div>
+</div>
+<footer>Publicacao automatica a partir da maquina de origem &middot; Volumetria</footer>
+</body>
+</html>
