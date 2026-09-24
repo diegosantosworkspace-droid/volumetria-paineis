@@ -57,7 +57,11 @@ foreach ($r in $rdcs) {
     $dest = Join-Path $site $r.cod
     New-Item -ItemType Directory -Path $dest -Force | Out-Null
     if (Test-Path $dash) {
-        Copy-Item $dash (Join-Path $dest 'index.html') -Force
+        $html = Get-Content $dash -Raw -Encoding UTF8
+        # Título do painel por RDC (dashboard tem SP1/GUARULHOS hardcoded)
+        $html = $html -replace '(class="rdc-code">)[^<]*(<)', ('$1' + $r.cod.ToUpper() + '$2')
+        $html = $html -replace '(class="rdc-name">)[^<]*(<)', ('$1' + $r.cidade.ToUpper() + '$2')
+        Set-Content -Path (Join-Path $dest 'index.html') -Value $html -Encoding UTF8 -NoNewline
     }
     if (Test-Path $json) {
         Copy-Item $json (Join-Path $dest 'dados_volumetria.json') -Force
