@@ -249,3 +249,19 @@
 [2026-09-24 19:43:29] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:150 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      a9762dd..ccfcc01  HEAD -> main
 [2026-09-24 19:43:29] publicar_site: concluido com sucesso.
 [2026-09-24 19:44:21] publicar_site: nada mudou; sem push.
+[2026-09-24 19:44:56]   git: [main ab4f920] painels atualizados em 24/09/2026 19:44:56 via publicar_site
+[2026-09-24 19:44:56]   git:  7 files changed, 9 insertions(+), 4 deletions(-)
+[2026-09-24 19:44:56]   git:  rename {gu => sp1}/dados_volumetria.json (100%)
+[2026-09-24 19:44:56]   git:  rename {gu => sp1}/index.html (99%)
+[2026-09-24 19:44:56]   git:  rename {gu => sp1}/public/images/rdc-truck.png (100%)
+[2026-09-24 19:44:56]   git:  rename {gu => sp1}/public/sounds/mario-pipe.mp3 (100%)
+[2026-09-24 19:45:03] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:150 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      ccfcc01..ab4f920  HEAD -> main
+[2026-09-24 19:45:03] publicar_site: concluido com sucesso.
+[2026-09-24 19:46:33] publicar_site: nada mudou; sem push.
+[2026-09-24 19:48:00] publicar_site: nada mudou; sem push.
+[2026-09-24 19:50:30] publicar_site: nada mudou; sem push.
+[2026-09-24 19:52:30] publicar_site: nada mudou; sem push.
+[2026-09-24 19:54:24] publicar_site: nada mudou; sem push.
+[2026-09-24 19:56:53] publicar_site: nada mudou; sem push.
+[2026-09-24 19:58:12] publicar_site: nada mudou; sem push.
+[2026-09-24 20:00:25] publicar_site: sem mudancas no git; nada a empurrar.

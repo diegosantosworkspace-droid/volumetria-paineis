@@ -66,6 +66,10 @@ foreach ($r in $rdcs) {
     if (Test-Path $json) {
         Copy-Item $json (Join-Path $dest 'dados_volumetria.json') -Force
     }
+    $prog = Join-Path $r.dir 'programacao.json'
+    if (Test-Path $prog) {
+        Copy-Item $prog (Join-Path $dest 'programacao.json') -Force
+    }
     if (Test-Path $pub) {
         $destPub = Join-Path $dest 'public'
         New-Item -ItemType Directory -Path $destPub -Force | Out-Null

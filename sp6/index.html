@@ -4686,7 +4686,32 @@
                     }
                     renderProgramacao();
                 })
-                .catch(function () {});
+                .catch(function () {
+                    // Sem servidor (ex.: GitHub Pages): tenta programacao.json ao lado do painel.
+                    fetch('programacao.json', { cache: 'no-store' })
+                        .then(function (r) { return r.json(); })
+                        .then(function (d) {
+                            if (d && Array.isArray(d.rotas) && d.rotas.length) {
+                                rotas = d.rotas;
+                                veiculos = (Array.isArray(d.veiculos) && d.veiculos.length)
+                                    ? d.veiculos : JSON.parse(JSON.stringify(VEICULOS_PADRAO));
+                                projPct = Math.min(1000, Math.max(0, parseFloat(d.pct) || 0));
+                                if (d && typeof d.disp === 'object' && d.disp !== null) disp = d.disp;
+                                localStorage.setItem(PROG_KEY + '_rotas', JSON.stringify(rotas));
+                                localStorage.setItem(PROG_KEY + '_veiculos', JSON.stringify(veiculos));
+                                localStorage.setItem(PROG_KEY + '_pct', projPct);
+                                syncProjPctUI();
+                            }
+                            renderProgramacao();
+                        })
+                        .catch(function () {
+                            rotas = [];
+                            veiculos = [];
+                            projPct = 0;
+                            disp = {};
+                            renderProgramacao();
+                        });
+                });
         }
 
         function esc(s) {
