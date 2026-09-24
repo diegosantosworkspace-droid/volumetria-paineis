@@ -4117,6 +4117,18 @@
 
                 if (!records.length) throw new Error('nenhum registro no JSON');
 
+                // Conta como ativa apenas DS marcadas como ativa/forçada na APOIO atual.
+                // Se o JSON trouxer statusPorDs, ele é a fonte da verdade; sem ele,
+                // mantém todas as DS que tiveram movimento (compatibilidade).
+                if (dados.statusPorDs) {
+                    const ativasSet = new Set(
+                        Object.entries(dados.statusPorDs)
+                            .filter(([, st]) => st !== 'nao_ativa' && st !== 'nao ativa' && st !== '')
+                            .map(([ds]) => ds)
+                    );
+                    activeStations.forEach(ds => { if (!ativasSet.has(ds)) activeStations.delete(ds); });
+                }
+
                 horasDisponiveis = Array.from(horasSet).sort();
                 buildTableHead();
                 loadedData = { records, activeStations };
