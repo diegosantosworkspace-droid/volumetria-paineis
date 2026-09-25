@@ -492,3 +492,24 @@
 [2026-09-25 19:21:35] publicar_site: nada mudou; sem push.
 [2026-09-25 19:23:40] publicar_site: sem mudancas no git; nada a empurrar.
 [2026-09-25 19:25:57] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M publicar_site.ps1, M sp1/dados_volumetria.json, M sp8/dados_volumetria.json
+[2026-09-25 19:25:58]   git: [main 217f8bd] painels atualizados em 25/09/2026 19:25:58 via publicar_site
+[2026-09-25 19:25:58]   git:  5 files changed, 138 insertions(+), 5 deletions(-)
+[2026-09-25 19:26:02] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      b61a814..217f8bd  HEAD -> main
+[2026-09-25 19:26:02] publicar_site: concluido com sucesso.
+[2026-09-25 19:26:03] publicar_site: nada mudou; sem push.
+[2026-09-25 19:27:52] publicar_site: nada mudou; sem push.
+[2026-09-25 19:29:48] publicar_site: nada mudou; sem push.
+[2026-09-25 19:32:30] publicar_site: nada mudou; sem push.
+[2026-09-25 19:34:00] publicar_site: nada mudou; sem push.
+[2026-09-25 19:35:30] publicar_site: nada mudou; sem push.
+[2026-09-25 19:37:31] publicar_site: nada mudou; sem push.
+[2026-09-25 19:39:37] publicar_site: nada mudou; sem push.
+[2026-09-25 19:41:34] publicar_site: nada mudou; sem push.
+[2026-09-25 19:43:34] publicar_site: nada mudou; sem push.
+[2026-09-25 19:45:41] publicar_site: nada mudou; sem push.
+[2026-09-25 19:47:35] publicar_site: nada mudou; sem push.
+[2026-09-25 19:49:35] publicar_site: nada mudou; sem push.
+[2026-09-25 19:51:53] publicar_site: nada mudou; sem push.
+[2026-09-25 19:54:17] publicar_site: nada mudou; sem push.
+[2026-09-25 19:55:59] publicar_site: nada mudou; sem push.
+[2026-09-25 19:57:44] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp2/dados_volumetria.json
