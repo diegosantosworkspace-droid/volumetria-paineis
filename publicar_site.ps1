@@ -31,6 +31,15 @@ $site    = Split-Path -Parent $MyInvocation.MyCommand.Path          # ...VOLUMET
 $desk    = Split-Path -Parent $site                                 # Desktop
 $logPath = Join-Path $site 'publicar.log'
 
+# Repositorio tem dono = IMILE-TI; quando este processo roda como SYSTEM o git se
+# recusa com "dubious ownership" e o status volta vazio (push silencioso). Garante
+# que este diretorio esteja na lista safe.directory do usuario que estiver rodando.
+$tmpHome1 = & git config --global --get-all safe.directory 2>$null
+if ($tmpHome1 -isnot [array]) { $tmpHome1 = @($tmpHome1) }
+if ($tmpHome1 -notcontains $site) {
+    & git config --global --add safe.directory $site 2>$null | Out-Null
+}
+
 function Log([string]$m) {
     $li = '[' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss') + '] ' + $m
     Add-Content -Path $logPath -Value $li -Encoding UTF8 -ErrorAction SilentlyContinue
@@ -161,11 +170,17 @@ if (-not (Test-Path (Join-Path $site '.git'))) {
     Log 'publicar_site: sem .git local; rode github_configurar.ps1 antes.'
     exit 0
 }
-$antes = & git status --porcelain 2>$null
+$statusOut = & git status --porcelain 2>&1
+$statusErro = $statusOut | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] }
+$antes = $statusOut | Where-Object { $_ -isnot [System.Management.Automation.ErrorRecord] }
+if ($statusErro) {
+    foreach ($e in $statusErro) { Log ('publicar_site: GIT(aviso): ' + [string]$e) }
+}
 if (-not $antes) {
-    Log 'publicar_site: sem mudancas no git; nada a empurrar.'
+    Log 'publicar_site: sem mudancas no git (status vazio); nada a empurrar.'
     exit 0
 }
+Log ('publicar_site: arquivos alterados detectados: ' + (($antes -join ',')))
 & git add -A 2>&1 | Out-Null
 $msg = 'painels atualizados em ' + (Get-Date -Format 'dd/MM/yyyy HH:mm:ss') + ' via publicar_site'
 & git commit -m $msg 2>&1 | ForEach-Object { Log ('  git: ' + $_) }
