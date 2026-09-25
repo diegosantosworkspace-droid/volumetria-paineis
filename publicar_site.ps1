@@ -9,6 +9,24 @@ param([switch]$ApenasSeMudou)
 
 $ErrorActionPreference = 'Continue'
 
+# O git vive no PATH do USUARIO (hermes). O MONITORAR_GERAL roda como SYSTEM,
+# que so ve o PATH da maquina — sem esses diretorios o 'git' nem executa e o
+# push morre silencioso. Garante o git recebendo o PATH da maquina + hermes.
+$u = if ($env:USERPROFILE -and (Test-Path "$env:USERPROFILE\AppData\Local\hermes\git\cmd")) {
+    $env:USERPROFILE
+} else { 'C:\Users\IMILE-TI' }
+foreach ($p in @(
+    "$u\AppData\Local\hermes\git\cmd",
+    "$u\AppData\Local\hermes\git\bin",
+    "$u\AppData\Local\hermes\git\usr\bin",
+    "$u\AppData\Local\GitHubDesktop\bin",
+    "C:\Program Files\Git\cmd"
+)) {
+    if ((Test-Path $p) -and $env:Path -notlike "*$p*") {
+        $env:Path = $p + ';' + $env:Path
+    }
+}
+
 $site    = Split-Path -Parent $MyInvocation.MyCommand.Path          # ...VOLUMETRIA_SITE
 $desk    = Split-Path -Parent $site                                 # Desktop
 $logPath = Join-Path $site 'publicar.log'
