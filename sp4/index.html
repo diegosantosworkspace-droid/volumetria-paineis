@@ -2164,6 +2164,22 @@
         .forc-chip b { color: #ffb74d; margin-right: 3px; }
         .forc-chip em { color: #9db8d4; font-style: normal; margin-right: 6px; }
 
+        /* Quadro "Volumetria DS's Não Ativas" */
+        .naoativas-value { color: #8fa2d4; }
+        .nao-tabela { color: #8fa2d4; font-size: 11px; }
+        .naoativas-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .nao-chip {
+            background: rgba(144, 164, 174, 0.14);
+            border: 1px dashed #78909C;
+            color: #b0bec5;
+            border-radius: 12px;
+            padding: 3px 10px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .nao-chip b { color: #8fa2d4; margin-right: 3px; }
+        .nao-chip em { color: #9db8d4; font-style: normal; margin-right: 6px; }
+
         /* Aba Evolução */
         .evol-resumo { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 8px; }
         .evol-resumo .evo-chip {
@@ -2855,6 +2871,17 @@
                     <div class="metric-unit">volumes (soma das forçadas) | 体积合计</div>
                     <div class="forcadas-list" id="forcadasList"></div>
                 </div>
+
+                <!-- VOLUMETRIA DS's NÃO ATIVAS -->
+                <div class="card naoativas-card" id="naoAtivasCard" style="display:none;">
+                    <div class="chart-title">
+                        Volumetria DS's Não Ativas
+                        <div class="chart-title-cn">非活跃站点体积</div>
+                    </div>
+                    <div class="metric-value naoativas-value" id="naoAtivasValue">0</div>
+                    <div class="metric-unit">volumes (soma das não ativas) | 体积合计</div>
+                    <div class="naoativas-list" id="naoAtivasList"></div>
+                </div>
             </div>
 
             <!-- PAINEL DIREITO - TABELA -->
@@ -3275,6 +3302,7 @@
             const range = XLSX.utils.decode_range(ws['!ref']);
             const active = new Set();
             const forced = new Set();
+            const inactive = new Set();
             for (let r = range.s.r + 1; r <= range.e.r; r++) {
                 const codeCell = ws[XLSX.utils.encode_cell({ r, c: 0 })];
                 const statusCell = ws[XLSX.utils.encode_cell({ r, c: 2 })];
@@ -3285,6 +3313,9 @@
                     if ((status.indexOf('forç') !== -1 || status.indexOf('forc') !== -1) && code) {
                         active.add(code);
                         forced.add(code);
+                    }
+                    if ((status.indexOf('inativ') !== -1 || status.indexOf('não ativa') !== -1 || status.indexOf('nao ativa') !== -1 || status.indexOf('desativ') !== -1) && code) {
+                        inactive.add(code);
                     }
                 }
                 // Bloco "DS's Forçada" → coluna F (código)
@@ -3298,7 +3329,7 @@
                     }
                 }
             }
-            return { active, forced };
+            return { active, forced, inactive };
         }
 
         // Extrai a data (YYYY-MM-DD) a partir da célula "Scan Time", aceitando texto ou data serial do Excel
@@ -3325,8 +3356,11 @@
             }
 
             const ap = parseApoio(wsApoio);
-            const activeStations = ap.active;
+            const activeStations = new Set(ap.active);
             const forcedStations = ap.forced;
+            const inactiveStations = ap.inactive;
+            // Mantém as DS não ativas na tabela (sempre nas últimas fileiras)
+            ap.inactive.forEach(ds => activeStations.add(ds));
             if (activeStations.size === 0) {
                 throw new Error('Nenhuma estação "Ativo" encontrada na aba APOIO.');
             }
@@ -3368,7 +3402,7 @@
                 throw new Error('Nenhum registro válido encontrado para as estações ativas.');
             }
 
-            return { records, activeStations, forcedStations };
+            return { records, activeStations, forcedStations, inactiveStations };
         }
 
         // ===== FILTRO POR PERÍODO =====
@@ -3442,6 +3476,7 @@
             buildTableHead();
             const { stationsData, totalPacotes, totalSacas, totaisPorHora, pacotesPorHora, sacasPorHora, turnoData } = data;
             const forcSet = (loadedData && loadedData.forcedStations) ? loadedData.forcedStations : new Set();
+            const naoSet = (loadedData && loadedData.naoAtivas) ? loadedData.naoAtivas : new Set();
 
             // ---- Tabela ----
             const tableBody = document.getElementById('tableBody');
@@ -3456,10 +3491,17 @@
             } else if (totalSortDir === 'desc') {
                 dsOrdenadas.sort((a, b) => b[1].total - a[1].total);
             }
+            // Não ativas sempre nas últimas fileiras (ativas/forçadas primeiro)
+            if (naoSet.size) {
+                const ativasOrd = dsOrdenadas.filter(([ds]) => !naoSet.has(ds));
+                const naoOrd = dsOrdenadas.filter(([ds]) => naoSet.has(ds));
+                dsOrdenadas = ativasOrd.concat(naoOrd);
+            }
 
             dsOrdenadas.forEach(([ds, valores]) => {
                 const forc = forcSet.has(ds);
-                let row = `<tr><td>DS ${ds}` + (forc ? ' <span class="forc-tabela">⚠</span>' : '') + `</td>`;
+                const nao = naoSet.has(ds);
+                let row = `<tr><td>DS ${ds}` + (forc ? ' <span class="forc-tabela">⚠</span>' : '') + (nao ? ' <span class="nao-tabela" title="DS não ativa">não ativa</span>' : '') + `</td>`;
                 let soma = 0;
                 horasDisponiveis.forEach(hora => {
                     const val = valores[hora] || 0;
@@ -3507,6 +3549,7 @@
 
             // ---- Quadro: Volumetria DS's Forçadas ----
             renderForcadasCard(dsOrdenadas, forcSet);
+            renderNaoAtivasCard(dsOrdenadas, naoSet);
 
             const IMILE_THEME = {
                 cyan: '#00dce8',
@@ -3798,6 +3841,31 @@
                 }).join('');
         }
 
+        // Quadro com a volumetria das DS's não ativas (abaixo do "Volumes por Intervalo")
+        function renderNaoAtivasCard(dsOrdenadas, naoSet) {
+            const card = document.getElementById('naoAtivasCard');
+            if (!card) return;
+            const valueEl = document.getElementById('naoAtivasValue');
+            const listEl = document.getElementById('naoAtivasList');
+            if (!valueEl || !listEl) return;
+            let total = 0;
+            const items = [];
+            dsOrdenadas.forEach(([ds, v]) => {
+                if (naoSet.has(ds)) { total += v.total; items.push([ds, v.total]); }
+            });
+            if (items.length === 0) { card.style.display = 'none'; return; }
+            card.style.display = '';
+            valueEl.textContent = fmt(total);
+            listEl.innerHTML = items
+                .sort((a, b) => b[1] - a[1])
+                .map(([ds, t]) => {
+                    const desc = (loadedData && loadedData.nao_ativas && loadedData.nao_ativas[ds]) ? loadedData.nao_ativas[ds] : '';
+                    return '<span class="nao-chip"><b>' + esc(ds) + '</b>' +
+                        (desc ? '<em>' + esc(desc) + '</em>' : '') +
+                        fmt(t) + '</span>';
+                }).join('');
+        }
+
         // ===== UPLOAD DO EXCEL (drag-and-drop) =====
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -4020,7 +4088,11 @@
         function atualizarDSAtivas() {
             const el = document.getElementById('estacoesAtivasCount');
             if (!el) return;
-            const n = (loadedData && loadedData.activeStations) ? loadedData.activeStations.size : 0;
+            let n = 0;
+            if (loadedData && loadedData.activeStations) {
+                const nao = loadedData.naoAtivas || new Set();
+                loadedData.activeStations.forEach(ds => { if (!nao.has(ds)) n++; });
+            }
             el.textContent = n;
         }
         function handleFile(file) {
@@ -4033,6 +4105,9 @@
                         const bytes = new Uint8Array(e.target.result);
                         const workbook = XLSX.read(bytes, { type: 'array' });
                         loadedData = processWorkbook(workbook);
+                        loadedData.naoAtivas = new Set(loadedData.inactiveStations || []);
+                        loadedData.ativasLog = new Set(Array.from(loadedData.activeStations).filter(ds => !loadedData.naoAtivas.has(ds)));
+                        loadedData.nao_ativas = {};
                         atualizarDSAtivas();
                         buildDsSelector();
 
@@ -4117,21 +4192,27 @@
 
                 if (!records.length) throw new Error('nenhum registro no JSON');
 
-                // Conta como ativa apenas DS marcadas como ativa/forçada na APOIO atual.
-                // Se o JSON trouxer statusPorDs, ele é a fonte da verdade; sem ele,
-                // mantém todas as DS que tiveram movimento (compatibilidade).
+                const naoAtivasJson = new Set();
+                const ativasLogJson = new Set();
+                // DS que não fazem mais parte da APOIO atual saem do painel (histórico
+                // dos dias servidos continua). DS não ativas são MANTIDAS, mas marcadas:
+                // vão para as últimas fileiras e entram no quadro "Não Ativas".
                 if (dados.statusPorDs) {
-                    const ativasSet = new Set(
-                        Object.entries(dados.statusPorDs)
-                            .filter(([, st]) => st !== 'nao_ativa' && st !== 'nao ativa' && st !== '')
-                            .map(([ds]) => ds)
-                    );
-                    activeStations.forEach(ds => { if (!ativasSet.has(ds)) activeStations.delete(ds); });
+                    Object.entries(dados.statusPorDs).forEach(([ds, st]) => {
+                        if (st === 'nao_ativa' || st === 'nao ativa') {
+                            naoAtivasJson.add(ds);
+                        } else if (st && st !== '') {
+                            ativasLogJson.add(ds);
+                        }
+                    });
+                    activeStations.forEach(ds => {
+                        if (!ativasLogJson.has(ds) && !naoAtivasJson.has(ds)) activeStations.delete(ds);
+                    });
                 }
 
                 horasDisponiveis = Array.from(horasSet).sort();
                 buildTableHead();
-                loadedData = { records, activeStations };
+                loadedData = { records, activeStations, naoAtivas: naoAtivasJson, ativasLog: ativasLogJson };
                 atualizarDSAtivas();
                 loadedData.forcedStations = new Set();
                 loadedData.forcadas = {};
@@ -4141,8 +4222,12 @@
                         if (st === 'forcada') loadedData.forcedStations.add(ds);
                     });
                 }
+                loadedData.nao_ativas = {};
                 (Array.isArray(dados.forcadas) ? dados.forcadas : []).forEach(f => {
                     if (f && f.ds) loadedData.forcadas[f.ds] = f.descricao || f.ds;
+                });
+                (Array.isArray(dados.nao_ativas) ? dados.nao_ativas : []).forEach(n => {
+                    if (n && n.ds) loadedData.nao_ativas[n.ds] = n.descricao || n.ds;
                 });
                 if (Array.isArray(dados.veiculos) && dados.veiculos.length) loadedData.veiculos = dados.veiculos;
                 buildDsSelector();
