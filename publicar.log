@@ -993,3 +993,9 @@
 [2026-09-29 17:17:33] publicar_site: nada mudou; sem push.
 [2026-09-29 17:19:29] publicar_site: nada mudou; sem push.
 [2026-09-29 17:21:29] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp1/dados_volumetria.json
+[2026-09-29 17:21:30]   git: [main cb4fa9f] painels atualizados em 29/09/2026 17:21:29 via publicar_site
+[2026-09-29 17:21:30]   git:  3 files changed, 12 insertions(+), 2 deletions(-)
+[2026-09-29 17:21:30] publicar_site: push: git.exe : fatal: unable to access 'https://github.com/diegosantosworkspace-droid/volumetria-paineis.git/': Could not  resolve host: github.com No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (fatal: unable t...ost: github.com:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError
+[2026-09-29 17:21:30] publicar_site: concluido com sucesso.
+[2026-09-29 17:24:24] publicar_site: nada mudou; sem push.
+[2026-09-29 17:25:03] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp8/dados_volumetria.json
