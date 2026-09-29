@@ -2796,6 +2796,7 @@
             <button type="button" class="tab-btn" data-tab="sacas">🛍️ Sacas | 袋子</button>
             <button type="button" class="tab-btn" data-tab="programacao">🚛 Programação | 运力规划</button>
             <button type="button" class="tab-btn" data-tab="evolucao">📈 Evolução | 演变分析</button>
+            <button type="button" class="tab-btn" data-tab="inativas">🚫 DS Inativas | 非活跃站</button>
         </div>
 
         <!-- PÁGINA 1: VOLUMETRIA -->
@@ -3192,6 +3193,51 @@
         </div>
     </div>
 
+    <!-- PÁGINA 5: DS INATIVAS -->
+    <div class="tab-page" id="page-inativas">
+        <div class="sacas-header">
+            <div>
+                <div class="sacas-title">🚫 DS Inativas | Volumetria das estações não ativas | 非活跃站体积</div>
+                <div class="sacas-desc">Somente as DS marcadas como Inativas no APOIO (aba APOIO, coluna STATUS). Dados de qualquer período que elas tenham volume.</div>
+            </div>
+        </div>
+
+        <div class="top-section">
+            <div class="left-panel">
+                <!-- TOTAL -->
+                <div class="card metric-card">
+                    <div class="chart-title">
+                        Total Geral DS Inativas
+                        <div class="chart-title-cn">非活跃站总计</div>
+                    </div>
+                    <div class="metric-value naoativas-value" id="totalInativasValue">0</div>
+                    <div class="metric-unit">volumes | 体积</div>
+                </div>
+
+                <!-- LISTA -->
+                <div class="card">
+                    <div class="chart-title">
+                        DS Inativas (lista)
+                        <div class="chart-title-cn">非活跃站清单</div>
+                    </div>
+                    <div class="naoativas-list" id="inativasList" style="display:block;"></div>
+                </div>
+            </div>
+
+            <!-- TABELA -->
+            <div class="right-panel">
+                <div class="table-container">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead id="inativasHead"></thead>
+                            <tbody id="inativasBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal das fotos para WhatsApp -->
     <div class="fotos-modal" id="fotosModal">
         <div class="fotos-box">
@@ -3244,6 +3290,7 @@
         let shiftsChartInstance = null;
         let stationsChartInstance = null;
         let evolutionChartInstance = null;
+        let inativasChartInstance = null;
 
         function fmt(n) {
             return Math.round(n).toLocaleString('pt-BR');
@@ -3866,6 +3913,112 @@
                 }).join('');
         }
 
+        // ===== ABA DS INATIVAS =====
+        function renderInativas(records) {
+            const naoSet = (loadedData && loadedData.naoAtivas) ? loadedData.naoAtivas : new Set();
+            const listEl = document.getElementById('inativasList');
+            const totalEl = document.getElementById('totalInativasValue');
+            const headEl = document.getElementById('inativasHead');
+            const bodyEl = document.getElementById('inativasBody');
+            if (!headEl || !bodyEl) return;
+
+            // Só registros de DS não ativas
+            const inatRecords = records.filter(rec => naoSet.has(rec.ds));
+
+            // Dados por estação (sempre mostra todas as não ativas, mesmo sem volume no período)
+            const stationsData = {};
+            naoSet.forEach(code => {
+                const row = { total: 0 };
+                horasDisponiveis.forEach(h => row[h] = 0);
+                stationsData[code] = row;
+            });
+            const totaisPorHora = {};
+            horasDisponiveis.forEach(h => totaisPorHora[h] = 0);
+            let totalGeral = 0;
+
+            inatRecords.forEach(rec => {
+                if (!stationsData[rec.ds]) return;
+                const q = rec.qty || 1;
+                stationsData[rec.ds].total += q;
+                if (rec.hora && stationsData[rec.ds].hasOwnProperty(rec.hora)) {
+                    stationsData[rec.ds][rec.hora] += q;
+                    totaisPorHora[rec.hora] += q;
+                }
+                totalGeral += q;
+            });
+
+            // ---- Cabeçalho da tabela ----
+            const seta = totalSortDir === 'asc' ? ' ▲' : totalSortDir === 'desc' ? ' ▼' : '';
+            let html = '<tr><th>DS Não Ativa<br>非活跃站</th>';
+            horasDisponiveis.forEach(h => { html += '<th>' + h + '</th>'; });
+            html += '<th>Média<br>平均</th>';
+            html += '<th class="total-sort" id="thInativasTotal">Total Geral' + seta + '<br>总计</th></tr>';
+            headEl.innerHTML = html;
+
+            const thSort = document.getElementById('thInativasTotal');
+            if (thSort) {
+                thSort.onclick = () => {
+                    totalSortDir = totalSortDir === null ? 'asc' : totalSortDir === 'asc' ? 'desc' : null;
+                    applyFilterAndRender();
+                };
+            }
+
+            // ---- Linhas ----
+            let dsOrdenadas = Object.entries(stationsData).sort((a, b) => a[0].localeCompare(b[0]));
+            if (totalSortDir === 'asc') {
+                dsOrdenadas.sort((a, b) => a[1].total - b[1].total);
+            } else if (totalSortDir === 'desc') {
+                dsOrdenadas.sort((a, b) => b[1].total - a[1].total);
+            }
+
+            bodyEl.innerHTML = '';
+            const totaisTabela = {};
+            horasDisponiveis.forEach(h => totaisTabela[h] = 0);
+
+            dsOrdenadas.forEach(([ds, valores]) => {
+                let row = `<tr><td>DS ${ds} <span class="nao-tabela" title="DS não ativa">não ativa</span></td>`;
+                let soma = 0;
+                horasDisponiveis.forEach(hora => {
+                    const val = valores[hora] || 0;
+                    row += `<td>${val > 0 ? fmt(val) : '-'}</td>`;
+                    totaisTabela[hora] += val;
+                    soma += val;
+                });
+                const media = soma / horasDisponiveis.length;
+                row += `<td class="media">${media > 0 ? media.toFixed(1).replace('.', ',') : '-'}</td>`;
+                row += `<td>${fmt(valores.total)}</td></tr>`;
+                bodyEl.innerHTML += row;
+            });
+
+            let totalRow = '<tr><td><strong>Total Inativas</strong></td>';
+            let somaTotal = 0;
+            horasDisponiveis.forEach(hora => { totalRow += `<td>${fmt(totaisTabela[hora])}</td>`; somaTotal += totaisTabela[hora]; });
+            const mediaTotal = somaTotal / horasDisponiveis.length;
+            totalRow += `<td class="media">${mediaTotal > 0 ? mediaTotal.toFixed(1).replace('.', ',') : '-'}</td>`;
+            totalRow += `<td>${fmt(totalGeral)}</td></tr>`;
+            bodyEl.innerHTML += totalRow;
+
+            // ---- Card total + lista ----
+            if (totalEl) totalEl.textContent = fmt(totalGeral);
+            if (listEl) {
+                listEl.innerHTML = '';
+                let comVolume = dsOrdenadas.filter(([ds, v]) => v.total > 0)
+                    .sort((a, b) => b[1].total - a[1].total);
+                if (comVolume.length) {
+                    comVolume.forEach(([ds, v]) => {
+                        const desc = (loadedData && loadedData.nao_ativas && loadedData.nao_ativas[ds]) ? loadedData.nao_ativas[ds] : '';
+                        listEl.innerHTML += '<span class="nao-chip"><b>' + esc(ds) + '</b>' +
+                            (desc ? '<em>' + esc(desc) + '</em>' : '') +
+                            fmt(v.total) + '</span>';
+                    });
+                } else {
+                    listEl.innerHTML = '<div style="color:#8fa2d4;font-size:12px;padding:6px 0;">Nenhuma DS inativa com volume no período selecionado.</div>';
+                }
+            }
+        }
+
+        // ===== FIM ABA DS INATIVAS =====
+
         // ===== UPLOAD DO EXCEL (drag-and-drop) =====
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -3933,6 +4086,7 @@
             const aggregated = aggregateRecords(filtered, loadedData.activeStations);
             renderAll(aggregated);
             renderSacas(filtered);
+            renderInativas(filtered);
             renderProgramacao();
             evolucaoBase = base;
             renderEvolucao(base);
