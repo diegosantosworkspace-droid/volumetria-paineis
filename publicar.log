@@ -1406,3 +1406,63 @@
 [2026-09-30 16:25:30] publicar_site: nada mudou; sem push.
 [2026-09-30 16:27:48] publicar_site: nada mudou; sem push.
 [2026-09-30 16:29:36] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp2/dados_volumetria.json
+[2026-09-30 16:29:37]   git: [main a9328ab] painels atualizados em 30/09/2026 16:29:36 via publicar_site
+[2026-09-30 16:29:37]   git:  3 files changed, 183 insertions(+), 2 deletions(-)
+[2026-09-30 16:29:39] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      492826a..a9328ab  HEAD -> main
+[2026-09-30 16:29:39] publicar_site: concluido com sucesso.
+[2026-09-30 16:31:34] publicar_site: nada mudou; sem push.
+[2026-09-30 16:33:27] publicar_site: nada mudou; sem push.
+[2026-09-30 16:35:49] publicar_site: nada mudou; sem push.
+[2026-09-30 16:37:25] publicar_site: nada mudou; sem push.
+[2026-09-30 16:39:26] publicar_site: nada mudou; sem push.
+[2026-09-30 16:41:28] publicar_site: nada mudou; sem push.
+[2026-09-30 16:43:32] publicar_site: nada mudou; sem push.
+[2026-09-30 16:45:31] publicar_site: nada mudou; sem push.
+[2026-09-30 16:47:26] publicar_site: nada mudou; sem push.
+[2026-09-30 16:49:37] publicar_site: nada mudou; sem push.
+[2026-09-30 16:51:55] publicar_site: nada mudou; sem push.
+[2026-09-30 16:53:24] publicar_site: nada mudou; sem push.
+[2026-09-30 16:55:38] publicar_site: nada mudou; sem push.
+[2026-09-30 16:57:30] publicar_site: nada mudou; sem push.
+[2026-09-30 16:59:28] publicar_site: nada mudou; sem push.
+[2026-09-30 17:01:46] publicar_site: nada mudou; sem push.
+[2026-09-30 17:03:45] publicar_site: nada mudou; sem push.
+[2026-09-30 17:05:27] publicar_site: nada mudou; sem push.
+[2026-09-30 17:07:30] publicar_site: nada mudou; sem push.
+[2026-09-30 17:10:08] publicar_site: nada mudou; sem push.
+[2026-09-30 17:11:31] publicar_site: nada mudou; sem push.
+[2026-09-30 17:13:29] publicar_site: nada mudou; sem push.
+[2026-09-30 17:15:29] publicar_site: nada mudou; sem push.
+[2026-09-30 17:17:34] publicar_site: nada mudou; sem push.
+[2026-09-30 17:19:37] publicar_site: nada mudou; sem push.
+[2026-09-30 17:21:46] publicar_site: nada mudou; sem push.
+[2026-09-30 17:23:46] publicar_site: nada mudou; sem push.
+[2026-09-30 17:26:29] publicar_site: nada mudou; sem push.
+[2026-09-30 17:27:33] publicar_site: nada mudou; sem push.
+[2026-09-30 17:29:30] publicar_site: nada mudou; sem push.
+[2026-09-30 17:31:40] publicar_site: nada mudou; sem push.
+[2026-09-30 17:34:11] publicar_site: nada mudou; sem push.
+[2026-09-30 17:35:59] publicar_site: nada mudou; sem push.
+[2026-09-30 17:37:41] publicar_site: nada mudou; sem push.
+[2026-09-30 17:39:30] publicar_site: nada mudou; sem push.
+[2026-09-30 17:41:32] publicar_site: nada mudou; sem push.
+[2026-09-30 17:43:47] publicar_site: nada mudou; sem push.
+[2026-09-30 17:45:34] publicar_site: nada mudou; sem push.
+[2026-09-30 17:47:33] publicar_site: nada mudou; sem push.
+[2026-09-30 17:49:35] publicar_site: nada mudou; sem push.
+[2026-09-30 17:51:30] publicar_site: nada mudou; sem push.
+[2026-09-30 17:53:50] publicar_site: nada mudou; sem push.
+[2026-09-30 17:55:37] publicar_site: nada mudou; sem push.
+[2026-09-30 17:57:31] publicar_site: nada mudou; sem push.
+[2026-09-30 17:59:30] publicar_site: nada mudou; sem push.
+[2026-09-30 18:01:30] publicar_site: nada mudou; sem push.
+[2026-09-30 18:03:39] publicar_site: nada mudou; sem push.
+[2026-09-30 18:06:13] publicar_site: nada mudou; sem push.
+[2026-09-30 18:08:10] publicar_site: nada mudou; sem push.
+[2026-09-30 18:10:30] publicar_site: nada mudou; sem push.
+[2026-09-30 18:12:10] publicar_site: nada mudou; sem push.
+[2026-09-30 18:13:40] publicar_site: nada mudou; sem push.
+[2026-09-30 18:15:42] publicar_site: nada mudou; sem push.
+[2026-09-30 18:18:35] publicar_site: nada mudou; sem push.
+[2026-09-30 18:20:07] publicar_site: nada mudou; sem push.
+[2026-09-30 18:23:19] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp1/dados_volumetria.json
