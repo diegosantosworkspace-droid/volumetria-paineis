@@ -2862,3 +2862,15 @@
 [2026-10-06 18:02:05] publicar_site: nada mudou; sem push.
 [2026-10-06 18:04:25] publicar_site: nada mudou; sem push.
 [2026-10-06 18:06:12] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp2/dados_volumetria.json,?? "PAINEIS VOLUMETRIA/"
+[2026-10-06 18:06:14]   git: [main cd5ac72] painels atualizados em 06/10/2026 18:06:13 via publicar_site
+[2026-10-06 18:06:14]   git:  10 files changed, 1249 insertions(+), 2 deletions(-)
+[2026-10-06 18:06:14]   git:  create mode 100644 PAINEIS VOLUMETRIA/PAINEL GU - Guarulhos.lnk
+[2026-10-06 18:06:14]   git:  create mode 100644 PAINEIS VOLUMETRIA/PAINEL SP2 - Barueri.lnk
+[2026-10-06 18:06:14]   git:  create mode 100644 PAINEIS VOLUMETRIA/PAINEL SP4 - Bauru.lnk
+[2026-10-06 18:06:14]   git:  create mode 100644 PAINEIS VOLUMETRIA/PAINEL SP5 - Ribeirao Preto.lnk
+[2026-10-06 18:06:14]   git:  create mode 100644 PAINEIS VOLUMETRIA/PAINEL SP6 - Hortolandia.lnk
+[2026-10-06 18:06:14]   git:  create mode 100644 PAINEIS VOLUMETRIA/PAINEL SP8 - Guarulhos.lnk
+[2026-10-06 18:06:14]   git:  create mode 100644 PAINEIS VOLUMETRIA/TORRE DE CONTROLE.lnk
+[2026-10-06 18:06:19] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      fc39d40..cd5ac72  HEAD -> main
+[2026-10-06 18:06:19] publicar_site: concluido com sucesso.
+[2026-10-06 18:07:40] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp2/dados_volumetria.json
