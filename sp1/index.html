@@ -2795,8 +2795,8 @@
             <button type="button" class="tab-btn active" data-tab="volumetria">📊 Volumetria | 体积</button>
             <button type="button" class="tab-btn" data-tab="sacas">🛍️ Sacas | 袋子</button>
             <button type="button" class="tab-btn" data-tab="programacao">🚛 Programação | 运力规划</button>
+            <button type="button" class="tab-btn" data-tab="clientes">🧾 Por Cliente | 客户分析</button>
             <button type="button" class="tab-btn" data-tab="evolucao">📈 Evolução | 演变分析</button>
-            <button type="button" class="tab-btn" data-tab="inativas">🚫 DS Inativas | 非活跃站</button>
         </div>
 
         <!-- PÁGINA 1: VOLUMETRIA -->
@@ -3193,12 +3193,12 @@
         </div>
     </div>
 
-    <!-- PÁGINA 5: DS INATIVAS -->
-    <div class="tab-page" id="page-inativas">
+    <!-- PÁGINA 5: POR CLIENTE -->
+    <div class="tab-page" id="page-clientes">
         <div class="sacas-header">
             <div>
-                <div class="sacas-title">🚫 DS Inativas | Volumetria das estações não ativas | 非活跃站体积</div>
-                <div class="sacas-desc">Somente as DS marcadas como Inativas no APOIO (aba APOIO, coluna STATUS). Dados de qualquer período que elas tenham volume.</div>
+                <div class="sacas-title">🧾 Por Cliente | Quantidade de pacotes e sacas | 客户分析</div>
+                <div class="sacas-desc">Volume do período selecionado por cliente (coluna Client Name da base). Pacotes, sacas e volume total.</div>
             </div>
         </div>
 
@@ -3207,20 +3207,20 @@
                 <!-- TOTAL -->
                 <div class="card metric-card">
                     <div class="chart-title">
-                        Total Geral DS Inativas
-                        <div class="chart-title-cn">非活跃站总计</div>
+                        Total Geral Clientes
+                        <div class="chart-title-cn">客户总计</div>
                     </div>
-                    <div class="metric-value naoativas-value" id="totalInativasValue">0</div>
+                    <div class="metric-value naoativas-value" id="totalClientesValue">0</div>
                     <div class="metric-unit">volumes | 体积</div>
                 </div>
 
-                <!-- LISTA -->
+                <!-- TOP CLIENTES -->
                 <div class="card">
                     <div class="chart-title">
-                        DS Inativas (lista)
-                        <div class="chart-title-cn">非活跃站清单</div>
+                        Top Clientes
+                        <div class="chart-title-cn">热门客户</div>
                     </div>
-                    <div class="naoativas-list" id="inativasList" style="display:block;"></div>
+                    <div class="naoativas-list" id="clientesList" style="display:block;"></div>
                 </div>
             </div>
 
@@ -3229,8 +3229,8 @@
                 <div class="table-container">
                     <div class="table-wrapper">
                         <table>
-                            <thead id="inativasHead"></thead>
-                            <tbody id="inativasBody"></tbody>
+                            <thead id="clientesHead"></thead>
+                            <tbody id="clientesBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -4341,6 +4341,20 @@
                             if (p > 0) records.push({ ds, produto: 'Pacote', turno, hora, date: d, qty: p });
                             if (s > 0) records.push({ ds, produto: 'Saca', turno, hora, date: d, qty: s });
                         });
+                    });
+                });
+
+                // Registros de cliente (1 por dia/cliente/produto) para a aba "Por Cliente".
+                // Vêm agregados no JSON: porData[d].clientes[cliente] = {Pacote:n, Saca:n}.
+                const clientRows = [];
+                datas.forEach(d => {
+                    const pd = dados.porData[d];
+                    if (!pd || !pd.clientes) return;
+                    Object.entries(pd.clientes).forEach(([cliente, prods]) => {
+                        const npac = prods['Pacote'] || 0;
+                        const nsac = prods['Saca'] || 0;
+                        if (npac > 0) clientRows.push({ cliente, produto: 'Pacote', date: d, qty: npac });
+                        if (nsac > 0) clientRows.push({ cliente, produto: 'Saca', date: d, qty: nsac });
                     });
                 });
 
