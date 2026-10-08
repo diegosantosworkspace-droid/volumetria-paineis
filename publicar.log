@@ -3322,3 +3322,8 @@
 [2026-10-07 22:18:41] publicar_site: nada mudou; sem push.
 [2026-10-07 22:20:39] publicar_site: nada mudou; sem push.
 [2026-10-07 22:22:09] publicar_site: arquivos alterados detectados:  M publicar.log, M sp2/index.html, M sp4/index.html, M sp5/index.html, M sp6/index.html, M sp8/index.html
+[2026-10-07 22:22:10]   git: [main bcb2eb1] painels atualizados em 07/10/2026 22:22:09 via publicar_site
+[2026-10-07 22:22:10]   git:  6 files changed, 362 insertions(+), 520 deletions(-)
+[2026-10-07 22:22:16] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      e23f7d4..bcb2eb1  HEAD -> main
+[2026-10-07 22:22:16] publicar_site: concluido com sucesso.
+[2026-10-07 22:23:53] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp1/dados_volumetria.json
