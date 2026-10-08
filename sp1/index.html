@@ -2873,16 +2873,7 @@
                     <div class="forcadas-list" id="forcadasList"></div>
                 </div>
 
-                <!-- VOLUMETRIA DS's NÃO ATIVAS -->
-                <div class="card naoativas-card" id="naoAtivasCard" style="display:none;">
-                    <div class="chart-title">
-                        Volumetria DS's Não Ativas
-                        <div class="chart-title-cn">非活跃站点体积</div>
-                    </div>
-                    <div class="metric-value naoativas-value" id="naoAtivasValue">0</div>
-                    <div class="metric-unit">volumes (soma das não ativas) | 体积合计</div>
-                    <div class="naoativas-list" id="naoAtivasList"></div>
-                </div>
+                <!-- ===== PÁGINA 1 FIM ===== -->
             </div>
 
             <!-- PAINEL DIREITO - TABELA -->
@@ -3265,6 +3256,8 @@
         let horasDisponiveis = ['06:00', '07:00', '08:00', '09:00', '11:00', '12:00', '13:00', '14:00', '15:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
         // Direção da ordenação da coluna Total: null (ordem alfabética) | 'asc' | 'desc'
         let totalSortDir = 'desc';
+        // Ordenação da aba Por Cliente: null | 'asc' | 'desc'
+        let cSortDir = 'desc';
 
         function buildTableHead() {
             const thead = document.getElementById('tableHead');
@@ -3596,7 +3589,6 @@
 
             // ---- Quadro: Volumetria DS's Forçadas ----
             renderForcadasCard(dsOrdenadas, forcSet);
-            renderNaoAtivasCard(dsOrdenadas, naoSet);
 
             const IMILE_THEME = {
                 cyan: '#00dce8',
@@ -3913,111 +3905,75 @@
                 }).join('');
         }
 
-        // ===== ABA DS INATIVAS =====
-        function renderInativas(records) {
-            const naoSet = (loadedData && loadedData.naoAtivas) ? loadedData.naoAtivas : new Set();
-            const listEl = document.getElementById('inativasList');
-            const totalEl = document.getElementById('totalInativasValue');
-            const headEl = document.getElementById('inativasHead');
-            const bodyEl = document.getElementById('inativasBody');
+        // ===== ABA POR CLIENTE =====
+        function renderClientes(dateStr) {
+            const listEl = document.getElementById('clientesList');
+            const totalEl = document.getElementById('totalClientesValue');
+            const headEl = document.getElementById('clientesHead');
+            const bodyEl = document.getElementById('clientesBody');
             if (!headEl || !bodyEl) return;
 
-            // Só registros de DS não ativas
-            const inatRecords = records.filter(rec => naoSet.has(rec.ds));
+            // Registros de cliente já filtrados pelo período (dia/semana/mês) da barra superior.
+            const rows = filterRecords(loadedData.clientRows || [], currentPeriod, dateStr);
 
-            // Dados por estação (sempre mostra todas as não ativas, mesmo sem volume no período)
-            const stationsData = {};
-            naoSet.forEach(code => {
-                const row = { total: 0 };
-                horasDisponiveis.forEach(h => row[h] = 0);
-                stationsData[code] = row;
+            // Agrega por cliente: { pacotes, sacas, total }
+            const porCliente = {};
+            rows.forEach(r => {
+                const c = porCliente[r.cliente] || { pacotes: 0, sacas: 0, total: 0 };
+                if (r.produto === 'Pacote') c.pacotes += r.qty;
+                else if (r.produto === 'Saca') c.sacas += r.qty;
+                c.total += r.qty;
+                porCliente[r.cliente] = c;
             });
-            const totaisPorHora = {};
-            horasDisponiveis.forEach(h => totaisPorHora[h] = 0);
+
             let totalGeral = 0;
-
-            inatRecords.forEach(rec => {
-                if (!stationsData[rec.ds]) return;
-                const q = rec.qty || 1;
-                stationsData[rec.ds].total += q;
-                if (rec.hora && stationsData[rec.ds].hasOwnProperty(rec.hora)) {
-                    stationsData[rec.ds][rec.hora] += q;
-                    totaisPorHora[rec.hora] += q;
-                }
-                totalGeral += q;
-            });
+            Object.values(porCliente).forEach(v => totalGeral += v.total);
 
             // ---- Cabeçalho da tabela ----
-            const seta = totalSortDir === 'asc' ? ' ▲' : totalSortDir === 'desc' ? ' ▼' : '';
-            let html = '<tr><th>DS Não Ativa<br>非活跃站</th>';
-            horasDisponiveis.forEach(h => { html += '<th>' + h + '</th>'; });
-            html += '<th>Média<br>平均</th>';
-            html += '<th class="total-sort" id="thInativasTotal">Total Geral' + seta + '<br>总计</th></tr>';
+            const seta = cSortDir === 'asc' ? ' ▲' : cSortDir === 'desc' ? ' ▼' : '';
+            let html = '<tr><th>Cliente<br>客户</th><th>Pacotes<br>件</th><th>Sacas<br>袋</th>' +
+                '<th class="total-sort" id="thClientesTotal">Total' + seta + '<br>总计</th><th>%</th></tr>';
             headEl.innerHTML = html;
 
-            const thSort = document.getElementById('thInativasTotal');
+            const thSort = document.getElementById('thClientesTotal');
             if (thSort) {
                 thSort.onclick = () => {
-                    totalSortDir = totalSortDir === null ? 'asc' : totalSortDir === 'asc' ? 'desc' : null;
+                    cSortDir = cSortDir === null ? 'asc' : cSortDir === 'asc' ? 'desc' : null;
                     applyFilterAndRender();
                 };
             }
 
             // ---- Linhas ----
-            let dsOrdenadas = Object.entries(stationsData).sort((a, b) => a[0].localeCompare(b[0]));
-            if (totalSortDir === 'asc') {
-                dsOrdenadas.sort((a, b) => a[1].total - b[1].total);
-            } else if (totalSortDir === 'desc') {
-                dsOrdenadas.sort((a, b) => b[1].total - a[1].total);
-            }
+            let clientesArr = Object.entries(porCliente).sort((a, b) => a[0].localeCompare(b[0]));
+            if (cSortDir === 'asc') clientesArr.sort((a, b) => a[1].total - b[1].total);
+            else if (cSortDir === 'desc') clientesArr.sort((a, b) => b[1].total - a[1].total);
 
             bodyEl.innerHTML = '';
-            const totaisTabela = {};
-            horasDisponiveis.forEach(h => totaisTabela[h] = 0);
-
-            dsOrdenadas.forEach(([ds, valores]) => {
-                let row = `<tr><td>DS ${ds} <span class="nao-tabela" title="DS não ativa">não ativa</span></td>`;
-                let soma = 0;
-                horasDisponiveis.forEach(hora => {
-                    const val = valores[hora] || 0;
-                    row += `<td>${val > 0 ? fmt(val) : '-'}</td>`;
-                    totaisTabela[hora] += val;
-                    soma += val;
-                });
-                const media = soma / horasDisponiveis.length;
-                row += `<td class="media">${media > 0 ? media.toFixed(1).replace('.', ',') : '-'}</td>`;
-                row += `<td>${fmt(valores.total)}</td></tr>`;
-                bodyEl.innerHTML += row;
+            clientesArr.forEach(([cliente, v]) => {
+                const pct = totalGeral > 0 ? (v.total / totalGeral * 100) : 0;
+                bodyEl.innerHTML += '<tr><td>' + esc(cliente) + '</td><td>' + fmt(v.pacotes) + '</td>' +
+                    '<td>' + fmt(v.sacas) + '</td><td>' + fmt(v.total) + '</td>' +
+                    '<td>' + pct.toFixed(1).replace('.', ',') + '%</td></tr>';
             });
-
-            let totalRow = '<tr><td><strong>Total Inativas</strong></td>';
-            let somaTotal = 0;
-            horasDisponiveis.forEach(hora => { totalRow += `<td>${fmt(totaisTabela[hora])}</td>`; somaTotal += totaisTabela[hora]; });
-            const mediaTotal = somaTotal / horasDisponiveis.length;
-            totalRow += `<td class="media">${mediaTotal > 0 ? mediaTotal.toFixed(1).replace('.', ',') : '-'}</td>`;
-            totalRow += `<td>${fmt(totalGeral)}</td></tr>`;
-            bodyEl.innerHTML += totalRow;
 
             // ---- Card total + lista ----
             if (totalEl) totalEl.textContent = fmt(totalGeral);
             if (listEl) {
                 listEl.innerHTML = '';
-                let comVolume = dsOrdenadas.filter(([ds, v]) => v.total > 0)
-                    .sort((a, b) => b[1].total - a[1].total);
+                let comVolume = clientesArr.filter(([c, v]) => v.total > 0);
                 if (comVolume.length) {
-                    comVolume.forEach(([ds, v]) => {
-                        const desc = (loadedData && loadedData.nao_ativas && loadedData.nao_ativas[ds]) ? loadedData.nao_ativas[ds] : '';
-                        listEl.innerHTML += '<span class="nao-chip"><b>' + esc(ds) + '</b>' +
-                            (desc ? '<em>' + esc(desc) + '</em>' : '') +
-                            fmt(v.total) + '</span>';
+                    comVolume.forEach(([cliente, v]) => {
+                        listEl.innerHTML += '<span class="nao-chip" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;">' +
+                            '<b>' + esc(cliente) + '</b>' +
+                            '<em>' + fmt(v.sacas) + ' sacas · ' + fmt(v.pacotes) + ' pacotes · ' + fmt(v.total) + '</em></span>';
                     });
                 } else {
-                    listEl.innerHTML = '<div style="color:#8fa2d4;font-size:12px;padding:6px 0;">Nenhuma DS inativa com volume no período selecionado.</div>';
+                    listEl.innerHTML = '<div style="color:#8fa2d4;font-size:12px;padding:6px 0;">Nenhum cliente com volume no período selecionado.</div>';
                 }
             }
         }
 
-        // ===== FIM ABA DS INATIVAS =====
+        // ===== FIM ABA POR CLIENTE =====
 
         // ===== UPLOAD DO EXCEL (drag-and-drop) =====
         const dropZone = document.getElementById('dropZone');
@@ -4086,7 +4042,7 @@
             const aggregated = aggregateRecords(filtered, loadedData.activeStations);
             renderAll(aggregated);
             renderSacas(filtered);
-            renderInativas(filtered);
+            renderClientes(dateStr);
             renderProgramacao();
             evolucaoBase = base;
             renderEvolucao(base);
@@ -4380,7 +4336,7 @@
 
                 horasDisponiveis = Array.from(horasSet).sort();
                 buildTableHead();
-                loadedData = { records, activeStations, naoAtivas: naoAtivasJson, ativasLog: ativasLogJson };
+                loadedData = { records, activeStations, naoAtivas: naoAtivasJson, ativasLog: ativasLogJson, clientRows };
                 atualizarDSAtivas();
                 loadedData.forcedStations = new Set();
                 loadedData.forcadas = {};
