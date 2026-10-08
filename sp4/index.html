@@ -3283,7 +3283,6 @@
         let shiftsChartInstance = null;
         let stationsChartInstance = null;
         let evolutionChartInstance = null;
-        let inativasChartInstance = null;
 
         function fmt(n) {
             return Math.round(n).toLocaleString('pt-BR');
@@ -3879,30 +3878,6 @@
                 }).join('');
         }
 
-        // Quadro com a volumetria das DS's não ativas (abaixo do "Volumes por Intervalo")
-        function renderNaoAtivasCard(dsOrdenadas, naoSet) {
-            const card = document.getElementById('naoAtivasCard');
-            if (!card) return;
-            const valueEl = document.getElementById('naoAtivasValue');
-            const listEl = document.getElementById('naoAtivasList');
-            if (!valueEl || !listEl) return;
-            let total = 0;
-            const items = [];
-            dsOrdenadas.forEach(([ds, v]) => {
-                if (naoSet.has(ds)) { total += v.total; items.push([ds, v.total]); }
-            });
-            if (items.length === 0) { card.style.display = 'none'; return; }
-            card.style.display = '';
-            valueEl.textContent = fmt(total);
-            listEl.innerHTML = items
-                .sort((a, b) => b[1] - a[1])
-                .map(([ds, t]) => {
-                    const desc = (loadedData && loadedData.nao_ativas && loadedData.nao_ativas[ds]) ? loadedData.nao_ativas[ds] : '';
-                    return '<span class="nao-chip"><b>' + esc(ds) + '</b>' +
-                        (desc ? '<em>' + esc(desc) + '</em>' : '') +
-                        fmt(t) + '</span>';
-                }).join('');
-        }
         function renderClientes(dateStr) {
             const listEl = document.getElementById('clientesList');
             const totalEl = document.getElementById('totalClientesValue');
