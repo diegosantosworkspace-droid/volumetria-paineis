@@ -3295,3 +3295,23 @@
 [2026-10-07 21:41:50] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      f07355f..2e66db4  HEAD -> main
 [2026-10-07 21:41:50] publicar_site: concluido com sucesso.
 [2026-10-07 21:43:40] publicar_site: arquivos alterados detectados:  M publicar.log, M sp1/index.html
+[2026-10-07 21:43:41]   git: [main d496fc6] painels atualizados em 07/10/2026 21:43:41 via publicar_site
+[2026-10-07 21:43:41]   git:  2 files changed, 5 insertions(+), 3 deletions(-)
+[2026-10-07 21:43:44] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      2e66db4..d496fc6  HEAD -> main
+[2026-10-07 21:43:44] publicar_site: concluido com sucesso.
+[2026-10-07 21:45:47] publicar_site: nada mudou; sem push.
+[2026-10-07 21:47:56] publicar_site: nada mudou; sem push.
+[2026-10-07 21:49:57] publicar_site: nada mudou; sem push.
+[2026-10-07 21:51:53] publicar_site: nada mudou; sem push.
+[2026-10-07 21:53:49] publicar_site: nada mudou; sem push.
+[2026-10-07 21:55:53] publicar_site: nada mudou; sem push.
+[2026-10-07 21:57:51] publicar_site: nada mudou; sem push.
+[2026-10-07 21:59:56] publicar_site: nada mudou; sem push.
+[2026-10-07 22:02:25] publicar_site: nada mudou; sem push.
+[2026-10-07 22:04:11] publicar_site: nada mudou; sem push.
+[2026-10-07 22:06:30] publicar_site: nada mudou; sem push.
+[2026-10-07 22:07:57] publicar_site: nada mudou; sem push.
+[2026-10-07 22:10:41] publicar_site: nada mudou; sem push.
+[2026-10-07 22:12:26] publicar_site: nada mudou; sem push.
+[2026-10-07 22:14:27] publicar_site: nada mudou; sem push.
+[2026-10-07 22:16:20] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp6/dados_volumetria.json
