@@ -3781,3 +3781,18 @@
 [2026-10-09 20:18:50] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      0bc29ee..1759b39  HEAD -> main
 [2026-10-09 20:18:50] publicar_site: concluido com sucesso.
 [2026-10-09 20:21:18] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp2/dados_volumetria.json
+[2026-10-09 20:21:19]   git: [main b2cb6ef] painels atualizados em 09/10/2026 20:21:18 via publicar_site
+[2026-10-09 20:21:19]   git:  3 files changed, 7 insertions(+), 2 deletions(-)
+[2026-10-09 20:21:22] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      1759b39..b2cb6ef  HEAD -> main
+[2026-10-09 20:21:22] publicar_site: concluido com sucesso.
+[2026-10-09 20:21:47] publicar_site: nada mudou; sem push.
+[2026-10-09 20:24:34] publicar_site: nada mudou; sem push.
+[2026-10-09 20:27:42] publicar_site: nada mudou; sem push.
+[2026-10-09 20:28:43] publicar_site: nada mudou; sem push.
+[2026-10-09 20:30:31] publicar_site: nada mudou; sem push.
+[2026-10-09 20:33:25] publicar_site: nada mudou; sem push.
+[2026-10-09 20:33:55] publicar_site: nada mudou; sem push.
+[2026-10-09 20:37:25] publicar_site: nada mudou; sem push.
+[2026-10-09 20:39:58] publicar_site: nada mudou; sem push.
+[2026-10-09 20:41:14] publicar_site: nada mudou; sem push.
+[2026-10-09 20:44:54] publicar_site: arquivos alterados detectados:  M publicar.log, M sp1/index.html, M sp2/index.html, M sp4/index.html, M sp5/index.html, M sp6/index.html, M sp8/index.html

@@ -3515,6 +3515,7 @@
             buildTableHead();
             const { stationsData, totalPacotes, totalSacas, totaisPorHora, pacotesPorHora, sacasPorHora, turnoData } = data;
             const forcSet = (loadedData && loadedData.forcedStations) ? loadedData.forcedStations : new Set();
+            const naoSet = (loadedData && loadedData.naoAtivas) ? loadedData.naoAtivas : new Set();
 
             // ---- Tabela ----
             const tableBody = document.getElementById('tableBody');
