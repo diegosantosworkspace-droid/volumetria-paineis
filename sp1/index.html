@@ -4151,6 +4151,7 @@
             renderAll(aggregated);
             renderSacas(filtered);
             renderClientes(dateStr);
+            renderCidade(dateStr);
             renderProgramacao();
             evolucaoBase = base;
             renderEvolucao(base);
@@ -4439,12 +4440,10 @@
                     Object.entries(pd.regioes || {}).forEach(([regiao, obj]) => {
                         const npac = obj['Pacote'] || 0;
                         const nsac = obj['Saca'] || 0;
-                        if (npac > 0) geoCidadeRows.push;
-                        if (npac > 0) geoRegRowsPush(npac);
-                        if (nsac > 0) geoRegRowsPush(nsac);
+                        if (npac > 0) geoRegiaoRows.push({ regiao, produto: 'Pacote', date: d, qty: npac });
+                        if (nsac > 0) geoRegiaoRows.push({ regiao, produto: 'Saca', date: d, qty: nsac });
                     });
                 });
-                function geoRegRowsPush() { /* placeholder substituído abaixo */ }
 
 
                 if (!records.length) throw new Error('nenhum registro no JSON');
@@ -4469,7 +4468,8 @@
 
                 horasDisponiveis = Array.from(horasSet).sort();
                 buildTableHead();
-                loadedData = { records, activeStations, naoAtivas: naoAtivasJson, ativasLog: ativasLogJson, clientRows };
+                loadedData = { records, activeStations, naoAtivas: naoAtivasJson, ativasLog: ativasLogJson, clientRows,
+                               geoCidadeRows, geoRegiaoRows };
                 atualizarDSAtivas();
                 loadedData.forcedStations = new Set();
                 loadedData.forcadas = {};
