@@ -2796,6 +2796,7 @@
             <button type="button" class="tab-btn" data-tab="sacas">🛍️ Sacas | 袋子</button>
             <button type="button" class="tab-btn" data-tab="programacao">🚛 Programação | 运力规划</button>
             <button type="button" class="tab-btn" data-tab="clientes">🧾 Por Cliente | 客户分析</button>
+            <button type="button" class="tab-btn" data-tab="cidade">🗺️ Cidade/Região | 城市区域</button>
             <button type="button" class="tab-btn" data-tab="evolucao">📈 Evolução | 演变分析</button>
         </div>
 
@@ -3229,6 +3230,52 @@
         </div>
     </div>
 
+    <!-- PÁGINA 6: POR CIDADE / REGIÃO -->
+    <div class="tab-page" id="page-cidade">
+        <div class="sacas-header">
+            <div>
+                <div class="sacas-title">🗺️ Por Cidade / Região | 按城市/区域</div>
+                <div class="sacas-desc">Volume do período por cidade de destino (Destination City) e por região (prefixo do CEP). Pacotes, sacas e total.</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <button type="button" class="filter-btn active" id="geoModoCidade">🏙️ Cidade</button>
+                <button type="button" class="filter-btn" id="geoModoRegiao">📍 Região (CEP)</button>
+            </div>
+        </div>
+
+        <div class="top-section">
+            <div class="left-panel">
+                <div class="card metric-card">
+                    <div class="chart-title">
+                        <span id="geoTotalTitle">Total Geral Cidades</span>
+                        <div class="chart-title-cn">总计</div>
+                    </div>
+                    <div class="metric-value naoativas-value" id="totalCidadeValue">0</div>
+                    <div class="metric-unit">volumes | 体积</div>
+                </div>
+
+                <div class="card">
+                    <div class="chart-title">
+                        <span id="geoListTitle">Top Cidades</span>
+                        <div class="chart-title-cn">热门</div>
+                    </div>
+                    <div class="naoativas-list" id="cidadeList" style="display:block;"></div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="table-container">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead id="cidadeHead"></thead>
+                            <tbody id="cidadeBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal das fotos para WhatsApp -->
     <div class="fotos-modal" id="fotosModal">
         <div class="fotos-box">
@@ -3258,6 +3305,9 @@
         let totalSortDir = 'desc';
         // Ordenação da aba Por Cliente: null | 'asc' | 'desc'
         let cSortDir = 'desc';
+        // Aba Cidade/Região: modo ('cidade' | 'regiao') e ordenação (null | 'asc' | 'desc')
+        let geoModo = 'cidade';
+        let geoSortDir = 'desc';
 
         function buildTableHead() {
             const thead = document.getElementById('tableHead');
@@ -3948,6 +3998,91 @@
 
         // ===== FIM ABA POR CLIENTE =====
 
+        // ===== ABA CIDADE / REGIÃO =====
+        function renderCidade(dateStr) {
+            const listEl = document.getElementById('cidadeList');
+            const totalEl = document.getElementById('totalCidadeValue');
+            const headEl = document.getElementById('cidadeHead');
+            const bodyEl = document.getElementById('cidadeBody');
+            if (!headEl || !bodyEl) return;
+
+            const ehRegiao = geoModo === 'regiao';
+            const src = ehRegiao ? (loadedData.geoRegiaoRows || []) : (loadedData.geoCidadeRows || []);
+            const rows = filterRecords(src, currentPeriod, dateStr);
+            const chave = ehRegiao ? 'regiao' : 'cidade';
+
+            const porGrupo = {};
+            rows.forEach(r => {
+                const k = r[chave];
+                const g = porGrupo[k] || { pacotes: 0, sacas: 0, total: 0 };
+                if (r.produto === 'Pacote') g.pacotes += r.qty;
+                else if (r.produto === 'Saca') g.sacas += r.qty;
+                g.total += r.qty;
+                porGrupo[k] = g;
+            });
+
+            let totalGeral = 0;
+            Object.values(porGrupo).forEach(v => totalGeral += v.total);
+
+            const rotulo = ehRegiao ? 'Região (CEP)' : 'Cidade';
+            const seta = geoSortDir === 'asc' ? ' ▲' : geoSortDir === 'desc' ? ' ▼' : '';
+            headEl.innerHTML = '<tr><th>' + rotulo + '<br>' + (ehRegiao ? '区域' : '城市') + '</th>' +
+                '<th>Pacotes<br>件</th><th>Sacas<br>袋</th>' +
+                '<th class="total-sort" id="thCidadeTotal">Total' + seta + '<br>总计</th><th>%</th></tr>';
+            const thSort = document.getElementById('thCidadeTotal');
+            if (thSort) {
+                thSort.onclick = () => {
+                    geoSortDir = geoSortDir === 'desc' ? 'asc' : geoSortDir === 'asc' ? null : 'desc';
+                    applyFilterAndRender();
+                };
+            }
+
+            let arr = Object.entries(porGrupo);
+            if (geoSortDir === 'asc') arr.sort((a, b) => a[1].total - b[1].total);
+            else if (geoSortDir === 'desc') arr.sort((a, b) => b[1].total - a[1].total);
+            else arr.sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+
+            const labelNome = (k) => esc(k) + (ehRegiao ? '<br><span style="font-size:11px;color:#8fa2d4;">CEP ' + esc(k) + 'xxx</span>' : '');
+
+            bodyEl.innerHTML = '';
+            arr.forEach(([k, v]) => {
+                const pct = totalGeral > 0 ? (v.total / totalGeral * 100) : 0;
+                bodyEl.innerHTML += '<tr><td>' + (ehRegiao ? esc(k) : esc(k)) + '</td>' +
+                    '<td>' + fmt(v.pacotes) + '</td><td>' + fmt(v.sacas) + '</td>' +
+                    '<td>' + fmt(v.total) + '</td>' +
+                    '<td>' + pct.toFixed(1).replace('.', ',') + '%</td></tr>';
+            });
+
+            if (totalEl) totalEl.textContent = fmt(totalGeral);
+            const titleTotal = document.getElementById('geoTotalTitle');
+            if (titleTotal) titleTotal.textContent = ehRegiao ? 'Total Geral Regiões' : 'Total Geral Cidades';
+            const titleList = document.getElementById('geoListTitle');
+            if (titleList) titleList.innerHTML = (ehRegiao ? 'Top Regiões' : 'Top Cidades') + '<div class="chart-title-cn">热门</div>';
+
+            if (listEl) {
+                listEl.innerHTML = '';
+                const arr2 = Object.entries(porGrupo).filter(([, v]) => v.total > 0).sort((a, b) => b[1].total - a[1].total);
+                if (arr2.length) {
+                    arr2.forEach(([k, v]) => {
+                        listEl.innerHTML += '<span class="nao-chip" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;">' +
+                            '<b>' + esc(k) + '</b>' +
+                            '<em>' + fmt(v.sacas) + ' sacas · ' + fmt(v.pacotes) + ' pacotes · ' + fmt(v.total) + '</em></span>';
+                    });
+                } else {
+                    listEl.innerHTML = '<div style="color:#8fa2d4;font-size:12px;padding:6px 0;">Nenhum volume no período selecionado.</div>';
+                }
+            }
+        }
+
+        (function ligarGeoModo() {
+            const bC = document.getElementById('geoModoCidade');
+            const bR = document.getElementById('geoModoRegiao');
+            if (!bC || !bR) return;
+            bC.onclick = () => { geoModo = 'cidade'; bC.classList.add('active'); bR.classList.remove('active'); applyFilterAndRender(); };
+            bR.onclick = () => { geoModo = 'regiao'; bR.classList.add('active'); bC.classList.remove('active'); applyFilterAndRender(); };
+        })();
+        // ===== FIM ABA CIDADE / REGIÃO =====
+
         // ===== UPLOAD DO EXCEL (drag-and-drop) =====
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -4016,6 +4151,7 @@
             renderAll(aggregated);
             renderSacas(filtered);
             renderClientes(dateStr);
+            renderCidade(dateStr);
             renderProgramacao();
             evolucaoBase = base;
             renderEvolucao(base);
@@ -4287,6 +4423,29 @@
                     });
                 });
 
+                // Registros de cidade / região (CEP) para a aba "Cidade/Região".
+                // Vêm agregados no JSON: porData[d].cidades[cidade] = {Pacote,Saca,total}
+                //                            porData[d].regioes[pref] = {Pacote,Saca,total,top}
+                const geoCidadeRows = [];
+                const geoRegiaoRows = [];
+                datas.forEach(d => {
+                    const pd = dados.porData[d];
+                    if (!pd) return;
+                    Object.entries(pd.cidades || {}).forEach(([cidade, obj]) => {
+                        const npac = obj['Pacote'] || 0;
+                        const nsac = obj['Saca'] || 0;
+                        if (npac > 0) geoCidadeRows.push({ cidade, produto: 'Pacote', date: d, qty: npac });
+                        if (nsac > 0) geoCidadeRows.push({ cidade, produto: 'Saca', date: d, qty: nsac });
+                    });
+                    Object.entries(pd.regioes || {}).forEach(([regiao, obj]) => {
+                        const npac = obj['Pacote'] || 0;
+                        const nsac = obj['Saca'] || 0;
+                        if (npac > 0) geoRegiaoRows.push({ regiao, produto: 'Pacote', date: d, qty: npac });
+                        if (nsac > 0) geoRegiaoRows.push({ regiao, produto: 'Saca', date: d, qty: nsac });
+                    });
+                });
+
+
                 if (!records.length) throw new Error('nenhum registro no JSON');
 
                 const naoAtivasJson = new Set();
@@ -4309,7 +4468,8 @@
 
                 horasDisponiveis = Array.from(horasSet).sort();
                 buildTableHead();
-                loadedData = { records, activeStations, naoAtivas: naoAtivasJson, ativasLog: ativasLogJson, clientRows };
+                loadedData = { records, activeStations, naoAtivas: naoAtivasJson, ativasLog: ativasLogJson, clientRows,
+                               geoCidadeRows, geoRegiaoRows };
                 atualizarDSAtivas();
                 loadedData.forcedStations = new Set();
                 loadedData.forcadas = {};
