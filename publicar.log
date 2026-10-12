@@ -4015,3 +4015,12 @@
 [2026-10-12 20:23:42] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      28e540e..d984b48  HEAD -> main
 [2026-10-12 20:23:42] publicar_site: concluido com sucesso.
 [2026-10-12 20:25:37] publicar_site: arquivos alterados detectados:  M publicar.log, M sp1/index.html, M sp2/index.html
+[2026-10-12 20:25:40]   git: [main d09fb66] painels atualizados em 12/10/2026 20:25:39 via publicar_site
+[2026-10-12 20:25:40]   git:  3 files changed, 171 insertions(+), 6 deletions(-)
+[2026-10-12 20:25:44] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      d984b48..d09fb66  HEAD -> main
+[2026-10-12 20:25:44] publicar_site: concluido com sucesso.
+[2026-10-12 20:27:41] publicar_site: nada mudou; sem push.
+[2026-10-12 20:29:36] publicar_site: nada mudou; sem push.
+[2026-10-12 20:31:45] publicar_site: nada mudou; sem push.
+[2026-10-12 20:33:44] publicar_site: nada mudou; sem push.
+[2026-10-12 20:36:25] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp2/dados_volumetria.json
