@@ -5622,7 +5622,50 @@
             el.querySelectorAll('img.leaflet-tile').forEach(img => {
                 if (img.complete && img.naturalWidth > 0) desenhar(img);
             });
-            el.querySelectorAll('canvas').forEach(cv2 => desenhar(cv2));
+            // Camadas vetoriais (heat + círculos) redesenhadas manualmente:
+            // o canvas do Leaflet nem sempre é reproduzido fiel no export.
+            if (geoModo === 'regiao' && loadedData && geoMap && typeof geoMap.latLngToContainerPoint === 'function') {
+                const regs = filterRecords(loadedData.geoRegiaoRows || [], currentPeriod, null);
+                const porReg = {};
+                regs.forEach(x => { porReg[x.regiao] = (porReg[x.regiao] || 0) + x.qty; });
+                const pontosExp = [];
+                let maxT = 0;
+                Object.entries(porReg).forEach(([reg, tot]) => {
+                    const c = geoCoords && geoCoords[reg];
+                    if (!c || tot <= 0) return;
+                    const dentroSP = c.uf === 'SP' || (c.lat <= -19.4 && c.lat >= -25.6 && c.lon >= -53.6 && c.lon <= -43.9);
+                    if (!dentroSP) return;
+                    pontosExp.push({ lat: c.lat, lon: c.lon, tot: tot });
+                    if (tot > maxT) maxT = tot;
+                });
+                try { window.__expN = pontosExp.length; } catch (e) {}
+                pontosExp.forEach(p => {
+                    const pt = geoMap.latLngToContainerPoint([p.lat, p.lon]);
+                    const rel = p.tot / (maxT || 1);
+                    const rad = 14 + 30 * Math.sqrt(rel);
+                    const rgb = rel > 0.6 ? '255,23,68' : rel > 0.3 ? '255,171,0' : '0,176,255';
+                    const gr = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, rad);
+                    gr.addColorStop(0, 'rgba(' + rgb + ',0.85)');
+                    gr.addColorStop(0.55, 'rgba(' + rgb + ',0.4)');
+                    gr.addColorStop(1, 'rgba(' + rgb + ',0)');
+                    ctx.fillStyle = gr;
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, rad, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = 'rgba(' + rgb + ',1)';
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                // Contorno aproximado do estado de SP
+                const p1 = geoMap.latLngToContainerPoint([-25.6, -53.6]);
+                const p2 = geoMap.latLngToContainerPoint([-19.4, -43.9]);
+                ctx.strokeStyle = 'rgba(255,221,0,0.9)';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([6, 5]);
+                ctx.strokeRect(p1.x, p2.y, p2.x - p1.x, p1.y - p2.y);
+                ctx.setLineDash([]);
+            }
             return cv;
         }
 
