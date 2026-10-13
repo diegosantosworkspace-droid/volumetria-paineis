@@ -5622,7 +5622,7 @@
                 geoMap.invalidateSize(false);
                 const p = pontosExportacao().pontos;
                 try { window.__aj = 'z0=' + geoMap.getZoom() + ' sz=' + JSON.stringify(geoMap.getSize()) + ' n=' + p.length; } catch (e) {}
-                if (p.length) geoMap.fitBounds(p.map(x => [x.lat, x.lon]), { padding: [30, 30], maxZoom: 10 });
+                if (p.length) geoMap.fitBounds(p.map(x => [x.lat, x.lon]), { padding: [30, 30], maxZoom: 10, animate: false });
                 try { window.__aj += ' z1=' + geoMap.getZoom() + ' c=' + JSON.stringify(geoMap.getCenter()); } catch (e) {}
             } catch (e) { console.warn('ajustarMapaExport falhou:', e); }
         }
@@ -5643,11 +5643,6 @@
             ctx.scale(escala, escala);
             ctx.fillStyle = '#0a1a3a';
             ctx.fillRect(0, 0, W, H);
-            // Garante que a origem de projeção do Leaflet bate com o tamanho atual
-            try {
-                geoMap.invalidateSize(false);
-                geoMap.setView(geoMap.getCenter(), geoMap.getZoom(), { animate: false, reset: true });
-            } catch (e) {}
             // A página pode ter zoom/transform: o container do Leaflet mede de um
             // tamanho e o retângulo visual de outro. Corrige a escala dos pontos.
             let sx = 1, sy = 1;
