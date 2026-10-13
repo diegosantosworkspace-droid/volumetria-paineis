@@ -8,6 +8,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="public/vendor/leaflet.css">
+    <script src="public/vendor/leaflet.js"></script>
+    <script src="public/vendor/leaflet-heat.js"></script>
     <style>
         * {
             margin: 0;
@@ -3274,6 +3277,15 @@
                 </div>
             </div>
         </div>
+
+        <div class="card" id="geoMapCard" style="display:none;margin-top:16px;">
+            <div class="chart-title">
+                <span>🗺️ Mapa de calor por região (CEP) | 区域热力图</span>
+                <div class="chart-title-cn">热力图</div>
+            </div>
+            <div id="geoMap" style="width:100%;height:440px;border-radius:10px;background:#0a1a3a;z-index:0;"></div>
+            <div id="geoMapVazio" style="display:none;color:#8fa2d4;font-size:12px;padding:8px 2px;">Sem coordenadas para o período selecionado.</div>
+        </div>
     </div>
 
     <!-- Modal das fotos para WhatsApp -->
@@ -4074,6 +4086,79 @@
             }
         }
 
+        // ===== MAPA DE CALOR (por região/CEP) =====
+        let geoCoords = null;
+        let geoMap = null;
+        let geoHeat = null;
+        let geoMarkers = null;
+
+        function carregarGeoCoords() {
+            fetch('geo_coords.json')
+                .then(r => r.ok ? r.json() : {})
+                .then(j => { geoCoords = j || {}; if (geoModo === 'regiao' && loadedData) renderGeoMap(dateFilter.value); })
+                .catch(() => { geoCoords = {}; });
+        }
+
+        function initGeoMap() {
+            if (geoMap || typeof L === 'undefined') return;
+            const el = document.getElementById('geoMap');
+            if (!el) return;
+            geoMap = L.map(el, { zoomControl: true, attributionControl: true, preferCanvas: true })
+                .setView([-23.55, -46.63], 8);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19, attribution: '&copy; OpenStreetMap'
+            }).addTo(geoMap);
+            geoMarkers = L.layerGroup().addTo(geoMap);
+            setTimeout(() => geoMap.invalidateSize(), 200);
+        }
+
+        function renderGeoMap(dateStr) {
+            const card = document.getElementById('geoMapCard');
+            if (!card || !loadedData) return;
+            const mostrar = (geoModo === 'regiao');
+            card.style.display = mostrar ? 'block' : 'none';
+            if (!mostrar) return;
+            initGeoMap();
+            if (!geoMap) return;
+            geoMap.invalidateSize();
+
+            const rows = filterRecords(loadedData.geoRegiaoRows || [], currentPeriod, dateStr);
+            const porReg = {};
+            rows.forEach(r => { porReg[r.regiao] = (porReg[r.regiao] || 0) + r.qty; });
+
+            const pontos = [];
+            let maxTotal = 0;
+            Object.entries(porReg).forEach(([reg, tot]) => {
+                const c = geoCoords && geoCoords[reg];
+                if (!c || tot <= 0) return;
+                pontos.push({ reg: reg, lat: c.lat, lon: c.lon, tot: tot, cidade: c.cidade });
+                if (tot > maxTotal) maxTotal = tot;
+            });
+
+            geoMarkers.clearLayers();
+            if (geoHeat) { geoMap.removeLayer(geoHeat); geoHeat = null; }
+            const vazio = document.getElementById('geoMapVazio');
+            if (vazio) vazio.style.display = pontos.length ? 'none' : 'block';
+            if (!pontos.length) return;
+
+            geoHeat = L.heatLayer(pontos.map(p => [p.lat, p.lon, p.tot]), {
+                radius: 32, blur: 22, maxZoom: 11, max: maxTotal || 1,
+                gradient: { 0.2: '#1a3a7a', 0.4: '#00b0ff', 0.6: '#00e676', 0.8: '#ffea00', 1.0: '#ff1744' }
+            }).addTo(geoMap);
+
+            const bounds = [];
+            pontos.sort((a, b) => b.tot - a.tot).forEach(p => {
+                const rel = p.tot / (maxTotal || 1);
+                const r = 5 + 16 * Math.sqrt(rel);
+                const cor = rel > 0.6 ? '#ff1744' : rel > 0.3 ? '#ffab00' : '#00b0ff';
+                L.circleMarker([p.lat, p.lon], { radius: r, color: cor, weight: 1, fillColor: cor, fillOpacity: 0.25 })
+                    .bindTooltip('CEP ' + p.reg + 'xxx — ' + fmt(p.tot) + (p.cidade ? ' · ' + p.cidade : ''), { direction: 'top' })
+                    .addTo(geoMarkers);
+                bounds.push([p.lat, p.lon]);
+            });
+            if (bounds.length) geoMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 10 });
+        }
+
         (function ligarGeoModo() {
             const bC = document.getElementById('geoModoCidade');
             const bR = document.getElementById('geoModoRegiao');
@@ -4081,6 +4166,7 @@
             bC.onclick = () => { geoModo = 'cidade'; bC.classList.add('active'); bR.classList.remove('active'); applyFilterAndRender(); };
             bR.onclick = () => { geoModo = 'regiao'; bR.classList.add('active'); bC.classList.remove('active'); applyFilterAndRender(); };
         })();
+        carregarGeoCoords();
         // ===== FIM ABA CIDADE / REGIÃO =====
 
         // ===== UPLOAD DO EXCEL (drag-and-drop) =====
@@ -4152,6 +4238,7 @@
             renderSacas(filtered);
             renderClientes(dateStr);
             renderCidade(dateStr);
+            renderGeoMap(dateStr);
             renderProgramacao();
             evolucaoBase = base;
             renderEvolucao(base);
