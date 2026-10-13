@@ -4047,7 +4047,7 @@
             bodyEl.innerHTML = '';
             arr.forEach(([k, v]) => {
                 const pct = totalGeral > 0 ? (v.total / totalGeral * 100) : 0;
-                bodyEl.innerHTML += '<tr><td>' + (ehRegiao ? esc(k) : esc(k)) + '</td>' +
+                bodyEl.innerHTML += '<tr><td>' + esc(k) + '</td>' +
                     '<td>' + fmt(v.pacotes) + '</td><td>' + fmt(v.sacas) + '</td>' +
                     '<td>' + fmt(v.total) + '</td>' +
                     '<td>' + pct.toFixed(1).replace('.', ',') + '%</td></tr>';
