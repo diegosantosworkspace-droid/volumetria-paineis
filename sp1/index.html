@@ -5618,12 +5618,10 @@
         // Enquadra o mapa do export nas regiões de SP (garante que apareçam no A4)
         function ajustarMapaExport() {
             try {
-                if (!geoMap || typeof geoMap.fitBounds !== 'function') { try { window.__aj = 'sem geoMap'; } catch (e) {} return; }
+                if (!geoMap || typeof geoMap.fitBounds !== 'function') return;
                 geoMap.invalidateSize(false);
                 const p = pontosExportacao().pontos;
-                try { window.__aj = 'z0=' + geoMap.getZoom() + ' sz=' + JSON.stringify(geoMap.getSize()) + ' n=' + p.length; } catch (e) {}
                 if (p.length) geoMap.fitBounds(p.map(x => [x.lat, x.lon]), { padding: [30, 30], maxZoom: 10, animate: false });
-                try { window.__aj += ' z1=' + geoMap.getZoom() + ' c=' + JSON.stringify(geoMap.getCenter()); } catch (e) {}
             } catch (e) { console.warn('ajustarMapaExport falhou:', e); }
         }
 
@@ -5666,11 +5664,9 @@
                 const info = pontosExportacao();
                 const pontosExp = info.pontos;
                 const maxT = info.max;
-                try { window.__expN = pontosExp.length; } catch (e) {}
                 pontosExp.forEach(p => {
                     const pt0 = geoMap.latLngToContainerPoint([p.lat, p.lon]);
                     const pt = { x: pt0.x * sx, y: pt0.y * sy };
-                    if (!window.__expPt0) { try { window.__expPt0 = Math.round(pt.x) + ',' + Math.round(pt.y) + ' (raw ' + Math.round(pt0.x) + ' sx' + sx.toFixed(2) + ')'; } catch (e) {} }
                     const rel = p.tot / (maxT || 1);
                     const rad = 14 + 30 * Math.sqrt(rel);
                     const rgb = rel > 0.6 ? '255,23,68' : rel > 0.3 ? '255,171,0' : '0,176,255';
@@ -5698,7 +5694,6 @@
                 ctx.strokeRect(p1.x, p2.y, p2.x - p1.x, p1.y - p2.y);
                 ctx.setLineDash([]);
             }
-            try { window.__lastMap = cv; } catch (e) {}
             return cv;
         }
 

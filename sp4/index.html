@@ -2224,7 +2224,7 @@
         .evol-sort-btn:hover { background: linear-gradient(135deg, #0066E6 0%, #0077f0 100%); }
         .evol-sort-btn.active { border-color: #FFDD00; background: linear-gradient(135deg, #0033A0 0%, #0052CC 100%); box-shadow: 0 0 10px rgba(255, 221, 0, 0.35); }
         .evol-linha { display: grid; grid-template-columns: 1fr; gap: 14px; }
-        #page-cidade .geo-map { width: 100%; height: clamp(300px, 46vh, 480px); border-radius: 10px; background: #0a1a3a; z-index: 0; }
+        #page-cidade .geo-map { width: 100%; max-width: 360px; aspect-ratio: 210 / 297; margin: 0 auto; border-radius: 10px; background: #0a1a3a; z-index: 0; }
         #page-cidade #geoMapCard .chart-title { margin-bottom: 10px; }
         #page-cidade .top-section { margin-top: 16px; }
         #page-evolucao .table-container { width: 100%; margin: 0 0 14px; }
@@ -3249,15 +3249,6 @@
             </div>
         </div>
 
-        <div class="card" id="geoMapCard" style="display:none;">
-            <div class="chart-title">
-                <span>🗺️ Mapa de calor por região (CEP) — somente São Paulo | 圣保罗热力图</span>
-                <div class="chart-title-cn">热力图</div>
-            </div>
-            <div id="geoMap" class="geo-map"></div>
-            <div id="geoMapVazio" style="display:none;color:#8fa2d4;font-size:12px;padding:8px 2px;">Sem coordenadas de São Paulo para o período selecionado.</div>
-        </div>
-
         <div class="top-section">
             <div class="left-panel">
                 <div class="card metric-card">
@@ -3268,6 +3259,15 @@
                     <div class="metric-value naoativas-value" id="totalCidadeValue">0</div>
                     <div class="metric-unit">volumes | 体积</div>
                 </div>
+
+        <div class="card" id="geoMapCard" style="display:none;">
+            <div class="chart-title">
+                <span>🗺️ Mapa de calor por região (CEP) — somente São Paulo | 圣保罗热力图</span>
+                <div class="chart-title-cn">热力图</div>
+            </div>
+            <div id="geoMap" class="geo-map"></div>
+            <div id="geoMapVazio" style="display:none;color:#8fa2d4;font-size:12px;padding:8px 2px;">Sem coordenadas de São Paulo para o período selecionado.</div>
+        </div>
 
                 <div class="card">
                     <div class="chart-title">
@@ -3293,7 +3293,7 @@
     <!-- Modal das fotos para WhatsApp -->
     <div class="fotos-modal" id="fotosModal">
         <div class="fotos-box">
-            <div class="fotos-title">📸 5 fotos geradas | 生成5张照片<br><span style="font-size:12px;color:#e0e0e0;">Baixe ou envie pelo WhatsApp | 下载或通过WhatsApp发送</span></div>
+            <div class="fotos-title">📸 6 fotos geradas | 生成6张照片<br><span style="font-size:12px;color:#e0e0e0;">Baixe ou envie pelo WhatsApp | 下载或通过WhatsApp发送</span></div>
             <div class="fotos-gallery" id="fotosGallery"></div>
             <button type="button" class="tool-btn" style="float:right;" id="btnFecharFotos">Fechar | 关闭</button>
         </div>
@@ -4105,14 +4105,14 @@
             if (geoMap || typeof L === 'undefined') return;
             const el = document.getElementById('geoMap');
             if (!el) return;
-            geoMap = L.map(el, { zoomControl: true, attributionControl: true, preferCanvas: true })
+            geoMap = L.map(el, { zoomControl: true, attributionControl: true, preferCanvas: true, zoomSnap: 0.25 })
                 .setView([-22.4, -48.6], 7);
             geoMap.setMaxBounds([[-25.9, -54.0], [-19.1, -43.5]]);
             L.rectangle([[-25.6, -53.6], [-19.4, -43.9]], {
                 color: '#FFDD00', weight: 1.5, fill: false, dashArray: '5 5'
             }).addTo(geoMap);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19, attribution: '&copy; OpenStreetMap'
+                maxZoom: 19, crossOrigin: true, attribution: '&copy; OpenStreetMap'
             }).addTo(geoMap);
             geoMarkers = L.layerGroup().addTo(geoMap);
             setTimeout(() => geoMap.invalidateSize(), 200);
@@ -5511,7 +5511,7 @@
         // ===== CAPTURA DE TELA (3 FOTOS) E IMPRIMIR =====
         // Captura vários elementos e junta num único canvas (empilhado verticalmente)
         // com um cabeçalho identificando a análise
-        async function capturarComposta(seletores, titulo) {
+        async function capturarComposta(seletores, titulo, optsExtra) {
             if (typeof html2canvas === 'undefined') {
                 throw new Error('Biblioteca html2canvas não carregou. Verifique a internet/CDN e recarregue a página.');
             }
@@ -5524,6 +5524,9 @@
                     cl.style.zoom = '1';
                     cl.querySelectorAll('*').forEach(n => {
                         try {
+                            // Não mexer nos elementos do Leaflet: o mapa posiciona
+                            // tiles/pane via transform; remover isso some com o mapa.
+                            if (n.className && typeof n.className === 'string' && n.className.indexOf('leaflet') !== -1) return;
                             n.style.transform = 'none';
                             n.style.zoom = '1';
                             n.style.animation = 'none';
@@ -5546,7 +5549,7 @@
                 const el = document.querySelector(sel);
                 if (!el) continue;
                 if (el.style && el.style.display === 'none') continue;
-                const base = { backgroundColor: '#0052CC', useCORS: true, logging: false, onclone: criarSanitizador(sel) };
+                const base = { backgroundColor: '#0052CC', useCORS: true, logging: false, onclone: criarSanitizador(sel), ...(optsExtra || {}) };
                 const tentativas = [{ ...base, scale: 2 }, { ...base, scale: 1 }];
                 if (el.scrollWidth > 0 && el.offsetParent !== null) tentativas[0].windowWidth = el.scrollWidth;
                 let c = null;
@@ -5593,6 +5596,139 @@
             return out;
         }
 
+        // Renderiza o próprio mapa do Leaflet num canvas: copia as tiles já
+        // Pontos (regiões de SP) usados no mapa/exportação — mesma regra do mapa na tela
+        function pontosExportacao() {
+            const res = { pontos: [], max: 0 };
+            if (!loadedData || !geoCoords) return res;
+            const regs = loadedData.geoRegiaoRows || [];
+            const porReg = {};
+            regs.forEach(x => { porReg[x.regiao] = (porReg[x.regiao] || 0) + x.qty; });
+            Object.entries(porReg).forEach(([reg, tot]) => {
+                const c = geoCoords[reg];
+                if (!c || tot <= 0) return;
+                const dentroSP = c.uf === 'SP' || (c.lat <= -19.4 && c.lat >= -25.6 && c.lon >= -53.6 && c.lon <= -43.9);
+                if (!dentroSP) return;
+                res.pontos.push({ lat: c.lat, lon: c.lon, tot: tot, reg: reg });
+                if (tot > res.max) res.max = tot;
+            });
+            return res;
+        }
+
+        // Enquadra o mapa do export nas regiões de SP (garante que apareçam no A4)
+        function ajustarMapaExport() {
+            try {
+                if (!geoMap || typeof geoMap.fitBounds !== 'function') return;
+                geoMap.invalidateSize(false);
+                const p = pontosExportacao().pontos;
+                if (p.length) geoMap.fitBounds(p.map(x => [x.lat, x.lon]), { padding: [30, 30], maxZoom: 10, animate: false });
+            } catch (e) { console.warn('ajustarMapaExport falhou:', e); }
+        }
+
+        // carregadas + as camadas de canvas (retângulo, marcadores e heat),
+        // pois o html2canvas não captura bem as tiles posicionadas por transform.
+        function capturarMapaCanvas(escala) {
+            const el = document.getElementById('geoMap');
+            if (!el) return null;
+            const r = el.getBoundingClientRect();
+            const W = Math.max(1, Math.round(r.width));
+            const H = Math.max(1, Math.round(r.height));
+            if (W < 2 || H < 2) return null;
+            const s = escala || 2;
+            const cv = document.createElement('canvas');
+            cv.width = W * escala; cv.height = H * escala;
+            const ctx = cv.getContext('2d');
+            ctx.scale(escala, escala);
+            ctx.fillStyle = '#0a1a3a';
+            ctx.fillRect(0, 0, W, H);
+            // A página pode ter zoom/transform: o container do Leaflet mede de um
+            // tamanho e o retângulo visual de outro. Corrige a escala dos pontos.
+            let sx = 1, sy = 1;
+            try {
+                const gs = geoMap.getSize();
+                if (gs && gs.x > 0) sx = W / gs.x;
+                if (gs && gs.y > 0) sy = H / gs.y;
+            } catch (e) {}
+            const desenhar = (node) => {
+                const b = node.getBoundingClientRect();
+                if (b.width === 0 || b.height === 0) return;
+                try { ctx.drawImage(node, b.left - r.left, b.top - r.top, b.width, b.height); }
+                catch (e) { console.warn('mapa: falha ao desenhar', e); }
+            };
+            el.querySelectorAll('img.leaflet-tile').forEach(img => {
+                if (img.complete && img.naturalWidth > 0) desenhar(img);
+            });
+            // Camadas vetoriais (heat + círculos) redesenhadas manualmente:
+            // o canvas do Leaflet nem sempre é reproduzido fiel no export.
+            if (geoModo === 'regiao' && geoMap && typeof geoMap.latLngToContainerPoint === 'function') {
+                const info = pontosExportacao();
+                const pontosExp = info.pontos;
+                const maxT = info.max;
+                pontosExp.forEach(p => {
+                    const pt0 = geoMap.latLngToContainerPoint([p.lat, p.lon]);
+                    const pt = { x: pt0.x * sx, y: pt0.y * sy };
+                    const rel = p.tot / (maxT || 1);
+                    const rad = 14 + 30 * Math.sqrt(rel);
+                    const rgb = rel > 0.6 ? '255,23,68' : rel > 0.3 ? '255,171,0' : '0,176,255';
+                    const gr = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, rad);
+                    gr.addColorStop(0, 'rgba(' + rgb + ',0.85)');
+                    gr.addColorStop(0.55, 'rgba(' + rgb + ',0.4)');
+                    gr.addColorStop(1, 'rgba(' + rgb + ',0)');
+                    ctx.fillStyle = gr;
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, rad, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = 'rgba(' + rgb + ',1)';
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                // Contorno aproximado do estado de SP
+                const q1 = geoMap.latLngToContainerPoint([-25.6, -53.6]);
+                const q2 = geoMap.latLngToContainerPoint([-19.4, -43.9]);
+                const p1 = { x: q1.x * sx, y: q1.y * sy };
+                const p2 = { x: q2.x * sx, y: q2.y * sy };
+                ctx.strokeStyle = 'rgba(255,221,0,0.9)';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([6, 5]);
+                ctx.strokeRect(p1.x, p2.y, p2.x - p1.x, p1.y - p2.y);
+                ctx.setLineDash([]);
+            }
+            return cv;
+        }
+
+        function comporA4(partes, titulo) {
+            const W = 1240, H = 1754;
+            const out = document.createElement('canvas');
+            out.width = W; out.height = H;
+            const ctx = out.getContext('2d');
+            ctx.fillStyle = '#0052CC';
+            ctx.fillRect(0, 0, W, H);
+            const hh = 96;
+            ctx.fillStyle = '#0033A0';
+            ctx.fillRect(0, 0, W, hh);
+            ctx.fillStyle = '#FFDD00';
+            ctx.font = 'bold 40px Arial, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(titulo || '', 30, hh / 2);
+            let y = hh + 22;
+            const maxW = W - 60;
+            const list = partes.filter(Boolean);
+            for (let i = 0; i < list.length; i++) {
+                const p = list[i];
+                const restante = H - 22 - y;
+                if (restante <= 40) break;
+                const ultimo = (i === list.length - 1);
+                let esc = Math.min(maxW / p.width, restante / p.height);
+                let h = p.height * esc;
+                const w = p.width * esc;
+                ctx.drawImage(p, Math.round((W - w) / 2), Math.round(y), Math.round(w), Math.round(h));
+                y += h + (ultimo ? 0 : 16);
+            }
+            return out;
+        }
+
         // Foto substituta caso alguma seção não consiga ser capturada (garante as 5)
         function fotoMarcaDagua(titulo) {
             const cv = document.createElement('canvas');
@@ -5635,7 +5771,7 @@
             }
 
             // Cada foto é capturada isolada: uma falha não derruba as outras.
-            const capturas = [null, null, null, null, null];
+            const capturas = [null, null, null, null, null, null];
             try {
                 ativarTab('volumetria');
                 await new Promise(r => setTimeout(r, 100));
@@ -5657,6 +5793,29 @@
                 await new Promise(r => setTimeout(r, 100));
                 capturas[4] = await capturarComposta(['.prog-result-titulo', '#progRef', '#progResumo', '#rotasResultado'], '5 - Programação: Rotas e Veículos | 运力规划');
             } catch (e) { console.error('Foto 5 falhou:', e); }
+            try {
+                const tabCidade = document.querySelector('.tab-btn[data-tab="cidade"]');
+                if (tabCidade) tabCidade.click();
+                const btnReg = document.getElementById('geoModoRegiao');
+                if (btnReg) btnReg.click();
+                // Garante o enquadramento em SP (a aba pode ter acabado de abrir)
+                await new Promise(r => setTimeout(r, 300));
+                try { if (typeof renderGeoMap === 'function') renderGeoMap(dateFilter.value); } catch (e) { console.warn('renderGeoMap no export falhou:', e); }
+                try { if (typeof ajustarMapaExport === 'function') ajustarMapaExport(); } catch (e) {}
+                // Espera as tiles do mapa carregarem (ou no máximo ~4s)
+                await new Promise((res) => {
+                    let acabou = false;
+                    const fim = () => { if (acabou) return; acabou = true; res(); };
+                    try {
+                        if (typeof geoMap !== 'undefined' && geoMap) {
+                            geoMap.once('load', () => setTimeout(fim, 800));
+                        }
+                    } catch (e) {}
+                    setTimeout(fim, 4000);
+                });
+                const cMapa = capturarMapaCanvas(4);
+                capturas[5] = comporA4([cMapa], 'Foto 6 - Mapa de calor SP / Regiões | 热力图');
+            } catch (e) { console.error('Foto 6 (mapa) falhou:', e); }
 
             // Restaura a aba que estava ativa antes da captura
             if (tabAtivaAntes) tabAtivaAntes.click();
@@ -5670,16 +5829,18 @@
                 'volumetria_2_sacas_' + data + '.png',
                 'volumetria_3_hora_' + data + '.png',
                 'volumetria_4_sacas_divisor_' + data + '.png',
-                'volumetria_5_programacao_' + data + '.png'
+                'volumetria_5_programacao_' + data + '.png',
+                'volumetria_6_mapa_sp_' + data + '.png'
             ];
             const titulos = [
                 'Foto 1 - Volumetria por DS | 按站体积',
                 'Foto 2 - Sacas e Volumes | 袋数和体积',
                 'Foto 3 - Análise por Hora | 按小时分析',
                 'Foto 4 - Sacas: Pacotes / Divisor | 袋子分析',
-                'Foto 5 - Programação: Rotas / Veículos | 运力规划'
+                'Foto 5 - Programação: Rotas / Veículos | 运力规划',
+                'Foto 6 - Mapa de calor SP / Regiões | 热力图'
             ];
-            // Garante as 5 fotos: se alguma seção falhou, entra uma marca d'água no lugar
+            // Garante as fotos: se alguma seção falhou, entra uma marca d'água no lugar
             capturas.forEach((c, i) => { if (!c) capturas[i] = fotoMarcaDagua(titulos[i]); });
             const fotos = capturas.map((c, i) => [c, nomes[i], titulos[i]]);
 
@@ -5735,7 +5896,7 @@
         function gerarFotosComFeedback(btnId) {
             const btn = document.getElementById(btnId);
             const origLabel = btn.textContent;
-            btn.textContent = '⏳ Gerando 5 fotos...';
+            btn.textContent = '⏳ Gerando 6 fotos...';
             btn.disabled = true;
             gerarQuatroFotos().then(() => {
                 btn.textContent = origLabel;
