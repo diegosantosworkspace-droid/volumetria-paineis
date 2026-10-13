@@ -4107,7 +4107,10 @@
             if (!el) return;
             geoMap = L.map(el, { zoomControl: true, attributionControl: true, preferCanvas: true })
                 .setView([-22.4, -48.6], 7);
-            geoMap.setMaxBounds([[-25.8, -53.8], [-19.2, -43.6]]);
+            geoMap.setMaxBounds([[-25.9, -54.0], [-19.1, -43.5]]);
+            L.rectangle([[-25.6, -53.6], [-19.4, -43.9]], {
+                color: '#FFDD00', weight: 1.5, fill: false, dashArray: '5 5'
+            }).addTo(geoMap);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19, attribution: '&copy; OpenStreetMap'
             }).addTo(geoMap);
