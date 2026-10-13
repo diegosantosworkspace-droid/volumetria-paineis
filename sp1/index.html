@@ -4112,7 +4112,7 @@
                 color: '#FFDD00', weight: 1.5, fill: false, dashArray: '5 5'
             }).addTo(geoMap);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19, attribution: '&copy; OpenStreetMap'
+                maxZoom: 19, crossOrigin: true, attribution: '&copy; OpenStreetMap'
             }).addTo(geoMap);
             geoMarkers = L.layerGroup().addTo(geoMap);
             setTimeout(() => geoMap.invalidateSize(), 200);
@@ -5593,6 +5593,40 @@
             return out;
         }
 
+        // Compõe as partes capturadas numa folha A4 retrato (210x297 -> 1240x1754 @150dpi)
+        function comporA4(partes, titulo) {
+            const W = 1240, H = 1754;
+            const out = document.createElement('canvas');
+            out.width = W; out.height = H;
+            const ctx = out.getContext('2d');
+            ctx.fillStyle = '#0052CC';
+            ctx.fillRect(0, 0, W, H);
+            const hh = 96;
+            ctx.fillStyle = '#0033A0';
+            ctx.fillRect(0, 0, W, hh);
+            ctx.fillStyle = '#FFDD00';
+            ctx.font = 'bold 40px Arial, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(titulo || '', 30, hh / 2);
+            let y = hh + 22;
+            const maxW = W - 60;
+            const list = partes.filter(Boolean);
+            for (let i = 0; i < list.length; i++) {
+                const p = list[i];
+                const restante = H - 22 - y;
+                if (restante <= 40) break;
+                const ultimo = (i === list.length - 1);
+                let esc = Math.min(1, maxW / p.width);
+                let h = p.height * esc;
+                if (h > restante) { esc = restante / p.height; h = restante; }
+                const w = p.width * esc;
+                ctx.drawImage(p, Math.round((W - w) / 2), Math.round(y), Math.round(w), Math.round(h));
+                y += h + (ultimo ? 0 : 16);
+            }
+            return out;
+        }
+
         // Foto substituta caso alguma seção não consiga ser capturada (garante as 5)
         function fotoMarcaDagua(titulo) {
             const cv = document.createElement('canvas');
@@ -5635,7 +5669,7 @@
             }
 
             // Cada foto é capturada isolada: uma falha não derruba as outras.
-            const capturas = [null, null, null, null, null];
+            const capturas = [null, null, null, null, null, null];
             try {
                 ativarTab('volumetria');
                 await new Promise(r => setTimeout(r, 100));
