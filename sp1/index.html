@@ -2224,7 +2224,7 @@
         .evol-sort-btn:hover { background: linear-gradient(135deg, #0066E6 0%, #0077f0 100%); }
         .evol-sort-btn.active { border-color: #FFDD00; background: linear-gradient(135deg, #0033A0 0%, #0052CC 100%); box-shadow: 0 0 10px rgba(255, 221, 0, 0.35); }
         .evol-linha { display: grid; grid-template-columns: 1fr; gap: 14px; }
-        #page-cidade .geo-map { width: 100%; height: clamp(300px, 46vh, 480px); border-radius: 10px; background: #0a1a3a; z-index: 0; }
+        #page-cidade .geo-map { width: 100%; max-width: 360px; aspect-ratio: 210 / 297; margin: 0 auto; border-radius: 10px; background: #0a1a3a; z-index: 0; }
         #page-cidade #geoMapCard .chart-title { margin-bottom: 10px; }
         #page-cidade .top-section { margin-top: 16px; }
         #page-evolucao .table-container { width: 100%; margin: 0 0 14px; }
@@ -3249,15 +3249,6 @@
             </div>
         </div>
 
-        <div class="card" id="geoMapCard" style="display:none;">
-            <div class="chart-title">
-                <span>🗺️ Mapa de calor por região (CEP) — somente São Paulo | 圣保罗热力图</span>
-                <div class="chart-title-cn">热力图</div>
-            </div>
-            <div id="geoMap" class="geo-map"></div>
-            <div id="geoMapVazio" style="display:none;color:#8fa2d4;font-size:12px;padding:8px 2px;">Sem coordenadas de São Paulo para o período selecionado.</div>
-        </div>
-
         <div class="top-section">
             <div class="left-panel">
                 <div class="card metric-card">
@@ -3268,6 +3259,15 @@
                     <div class="metric-value naoativas-value" id="totalCidadeValue">0</div>
                     <div class="metric-unit">volumes | 体积</div>
                 </div>
+
+        <div class="card" id="geoMapCard" style="display:none;">
+            <div class="chart-title">
+                <span>🗺️ Mapa de calor por região (CEP) — somente São Paulo | 圣保罗热力图</span>
+                <div class="chart-title-cn">热力图</div>
+            </div>
+            <div id="geoMap" class="geo-map"></div>
+            <div id="geoMapVazio" style="display:none;color:#8fa2d4;font-size:12px;padding:8px 2px;">Sem coordenadas de São Paulo para o período selecionado.</div>
+        </div>
 
                 <div class="card">
                     <div class="chart-title">
