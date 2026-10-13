@@ -5597,6 +5597,34 @@
         }
 
         // Renderiza o próprio mapa do Leaflet num canvas: copia as tiles já
+        // Pontos (regiões de SP) usados no mapa/exportação — mesma regra do mapa na tela
+        function pontosExportacao() {
+            const res = { pontos: [], max: 0 };
+            if (!loadedData || !geoCoords) return res;
+            const regs = loadedData.geoRegiaoRows || [];
+            const porReg = {};
+            regs.forEach(x => { porReg[x.regiao] = (porReg[x.regiao] || 0) + x.qty; });
+            Object.entries(porReg).forEach(([reg, tot]) => {
+                const c = geoCoords[reg];
+                if (!c || tot <= 0) return;
+                const dentroSP = c.uf === 'SP' || (c.lat <= -19.4 && c.lat >= -25.6 && c.lon >= -53.6 && c.lon <= -43.9);
+                if (!dentroSP) return;
+                res.pontos.push({ lat: c.lat, lon: c.lon, tot: tot, reg: reg });
+                if (tot > res.max) res.max = tot;
+            });
+            return res;
+        }
+
+        // Enquadra o mapa do export nas regiões de SP (garante que apareçam no A4)
+        function ajustarMapaExport() {
+            try {
+                if (!geoMap || typeof geoMap.fitBounds !== 'function') return;
+                geoMap.invalidateSize(false);
+                const p = pontosExportacao().pontos;
+                if (p.length) geoMap.fitBounds(p.map(x => [x.lat, x.lon]), { padding: [30, 30], maxZoom: 10 });
+            } catch (e) { console.warn('ajustarMapaExport falhou:', e); }
+        }
+
         // carregadas + as camadas de canvas (retângulo, marcadores e heat),
         // pois o html2canvas não captura bem as tiles posicionadas por transform.
         function capturarMapaCanvas(escala) {
@@ -5629,20 +5657,10 @@
             });
             // Camadas vetoriais (heat + círculos) redesenhadas manualmente:
             // o canvas do Leaflet nem sempre é reproduzido fiel no export.
-            if (geoModo === 'regiao' && loadedData && geoMap && typeof geoMap.latLngToContainerPoint === 'function') {
-                const regs = filterRecords(loadedData.geoRegiaoRows || [], currentPeriod, null);
-                const porReg = {};
-                regs.forEach(x => { porReg[x.regiao] = (porReg[x.regiao] || 0) + x.qty; });
-                const pontosExp = [];
-                let maxT = 0;
-                Object.entries(porReg).forEach(([reg, tot]) => {
-                    const c = geoCoords && geoCoords[reg];
-                    if (!c || tot <= 0) return;
-                    const dentroSP = c.uf === 'SP' || (c.lat <= -19.4 && c.lat >= -25.6 && c.lon >= -53.6 && c.lon <= -43.9);
-                    if (!dentroSP) return;
-                    pontosExp.push({ lat: c.lat, lon: c.lon, tot: tot });
-                    if (tot > maxT) maxT = tot;
-                });
+            if (geoModo === 'regiao' && geoMap && typeof geoMap.latLngToContainerPoint === 'function') {
+                const info = pontosExportacao();
+                const pontosExp = info.pontos;
+                const maxT = info.max;
                 try { window.__expN = pontosExp.length; } catch (e) {}
                 pontosExp.forEach(p => {
                     const pt = geoMap.latLngToContainerPoint([p.lat, p.lon]);
@@ -5778,6 +5796,10 @@
                 if (tabCidade) tabCidade.click();
                 const btnReg = document.getElementById('geoModoRegiao');
                 if (btnReg) btnReg.click();
+                // Garante o enquadramento em SP (a aba pode ter acabado de abrir)
+                await new Promise(r => setTimeout(r, 300));
+                try { if (typeof renderGeoMap === 'function') renderGeoMap(dateFilter.value); } catch (e) { console.warn('renderGeoMap no export falhou:', e); }
+                try { if (typeof ajustarMapaExport === 'function') ajustarMapaExport(); } catch (e) {}
                 // Espera as tiles do mapa carregarem (ou no máximo ~4s)
                 await new Promise((res) => {
                     let acabou = false;
