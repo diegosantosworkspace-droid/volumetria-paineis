@@ -5618,10 +5618,12 @@
         // Enquadra o mapa do export nas regiões de SP (garante que apareçam no A4)
         function ajustarMapaExport() {
             try {
-                if (!geoMap || typeof geoMap.fitBounds !== 'function') return;
+                if (!geoMap || typeof geoMap.fitBounds !== 'function') { try { window.__aj = 'sem geoMap'; } catch (e) {} return; }
                 geoMap.invalidateSize(false);
                 const p = pontosExportacao().pontos;
+                try { window.__aj = 'z0=' + geoMap.getZoom() + ' sz=' + JSON.stringify(geoMap.getSize()) + ' n=' + p.length; } catch (e) {}
                 if (p.length) geoMap.fitBounds(p.map(x => [x.lat, x.lon]), { padding: [30, 30], maxZoom: 10 });
+                try { window.__aj += ' z1=' + geoMap.getZoom() + ' c=' + JSON.stringify(geoMap.getCenter()); } catch (e) {}
             } catch (e) { console.warn('ajustarMapaExport falhou:', e); }
         }
 
@@ -5646,6 +5648,14 @@
                 geoMap.invalidateSize(false);
                 geoMap.setView(geoMap.getCenter(), geoMap.getZoom(), { animate: false, reset: true });
             } catch (e) {}
+            // A página pode ter zoom/transform: o container do Leaflet mede de um
+            // tamanho e o retângulo visual de outro. Corrige a escala dos pontos.
+            let sx = 1, sy = 1;
+            try {
+                const gs = geoMap.getSize();
+                if (gs && gs.x > 0) sx = W / gs.x;
+                if (gs && gs.y > 0) sy = H / gs.y;
+            } catch (e) {}
             const desenhar = (node) => {
                 const b = node.getBoundingClientRect();
                 if (b.width === 0 || b.height === 0) return;
@@ -5663,8 +5673,9 @@
                 const maxT = info.max;
                 try { window.__expN = pontosExp.length; } catch (e) {}
                 pontosExp.forEach(p => {
-                    const pt = geoMap.latLngToContainerPoint([p.lat, p.lon]);
-                    if (!window.__expPt0) { try { window.__expPt0 = Math.round(pt.x) + ',' + Math.round(pt.y); } catch (e) {} }
+                    const pt0 = geoMap.latLngToContainerPoint([p.lat, p.lon]);
+                    const pt = { x: pt0.x * sx, y: pt0.y * sy };
+                    if (!window.__expPt0) { try { window.__expPt0 = Math.round(pt.x) + ',' + Math.round(pt.y) + ' (raw ' + Math.round(pt0.x) + ' sx' + sx.toFixed(2) + ')'; } catch (e) {} }
                     const rel = p.tot / (maxT || 1);
                     const rad = 14 + 30 * Math.sqrt(rel);
                     const rgb = rel > 0.6 ? '255,23,68' : rel > 0.3 ? '255,171,0' : '0,176,255';
@@ -5682,8 +5693,10 @@
                     ctx.fill();
                 });
                 // Contorno aproximado do estado de SP
-                const p1 = geoMap.latLngToContainerPoint([-25.6, -53.6]);
-                const p2 = geoMap.latLngToContainerPoint([-19.4, -43.9]);
+                const q1 = geoMap.latLngToContainerPoint([-25.6, -53.6]);
+                const q2 = geoMap.latLngToContainerPoint([-19.4, -43.9]);
+                const p1 = { x: q1.x * sx, y: q1.y * sy };
+                const p2 = { x: q2.x * sx, y: q2.y * sy };
                 ctx.strokeStyle = 'rgba(255,221,0,0.9)';
                 ctx.lineWidth = 1.5;
                 ctx.setLineDash([6, 5]);
