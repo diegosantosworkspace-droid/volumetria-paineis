@@ -3244,15 +3244,21 @@
                 <button type="button" class="filter-btn active" id="geoModoCidade">🏙️ Cidade</button>
                 <button type="button" class="filter-btn" id="geoModoRegiao">📍 Região (CEP)</button>
             </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <button type="button" class="filter-btn active" id="geoModoCidade">🏙️ Cidade</button>
+                <button type="button" class="filter-btn" id="geoModoRegiao">👨 Região (CEP)</button>
+            </div>
         </div>
 
-        <div class="top-section">
-            <div class="left-panel">
-                <div class="card metric-card">
-                    <div class="chart-title">
-                        <span id="geoTotalTitle">Total Geral Cidades</span>
-                        <div class="chart-title-cn">总计</div>
-                    </div>
+        <div class="card" id="geoMapCard" style="display:none;">
+            <div class="chart-title">
+                <span>🗺️ Mapa de calor por região (CEP) — somente São Paulo | 圣保罗热力图</span>
+                <div class="chart-title-cn">热力图</div>
+            </div>
+            <div id="geoMap" class="geo-map"></div>
+            <div id="geoMapVazio" style="display:none;color:#8fa2d4;font-size:12px;padding:8px 2px;">Sem coordenadas de São Paulo para o período selecionado.</div>
+        </div>
+
                     <div class="metric-value naoativas-value" id="totalCidadeValue">0</div>
                     <div class="metric-unit">volumes | 体积</div>
                 </div>
@@ -3276,15 +3282,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="card" id="geoMapCard" style="display:none;margin-top:16px;">
-            <div class="chart-title">
-                <span>🗺️ Mapa de calor por região (CEP) | 区域热力图</span>
-                <div class="chart-title-cn">热力图</div>
-            </div>
-            <div id="geoMap" style="width:100%;height:440px;border-radius:10px;background:#0a1a3a;z-index:0;"></div>
-            <div id="geoMapVazio" style="display:none;color:#8fa2d4;font-size:12px;padding:8px 2px;">Sem coordenadas para o período selecionado.</div>
         </div>
     </div>
 
