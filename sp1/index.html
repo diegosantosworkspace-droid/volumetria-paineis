@@ -5524,6 +5524,9 @@
                     cl.style.zoom = '1';
                     cl.querySelectorAll('*').forEach(n => {
                         try {
+                            // Não mexer nos elementos do Leaflet: o mapa posiciona
+                            // tiles/pane via transform; remover isso some com o mapa.
+                            if (n.className && typeof n.className === 'string' && n.className.indexOf('leaflet') !== -1) return;
                             n.style.transform = 'none';
                             n.style.zoom = '1';
                             n.style.animation = 'none';
@@ -5696,7 +5699,17 @@
                 if (tabCidade) tabCidade.click();
                 const btnReg = document.getElementById('geoModoRegiao');
                 if (btnReg) btnReg.click();
-                await new Promise(r => setTimeout(r, 1400));
+                // Espera as tiles do mapa carregarem (ou no máximo ~4s)
+                await new Promise((res) => {
+                    let acabou = false;
+                    const fim = () => { if (acabou) return; acabou = true; res(); };
+                    try {
+                        if (typeof geoMap !== 'undefined' && geoMap) {
+                            geoMap.once('load', () => setTimeout(fim, 800));
+                        }
+                    } catch (e) {}
+                    setTimeout(fim, 4000);
+                });
                 const cMapa = await capturarComposta(['#geoMapCard'], null);
                 const cTab = await capturarComposta(['#page-cidade .right-panel .table-container'], null);
                 capturas[5] = comporA4([cMapa, cTab], 'Foto 6 - Mapa de calor SP e Regioes | 热力图');
