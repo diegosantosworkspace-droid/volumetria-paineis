@@ -5596,7 +5596,36 @@
             return out;
         }
 
-        // Compõe as partes capturadas numa folha A4 retrato (210x297 -> 1240x1754 @150dpi)
+        // Renderiza o próprio mapa do Leaflet num canvas: copia as tiles já
+        // carregadas + as camadas de canvas (retângulo, marcadores e heat),
+        // pois o html2canvas não captura bem as tiles posicionadas por transform.
+        function capturarMapaCanvas(escala) {
+            const el = document.getElementById('geoMap');
+            if (!el) return null;
+            const r = el.getBoundingClientRect();
+            const W = Math.max(1, Math.round(r.width));
+            const H = Math.max(1, Math.round(r.height));
+            if (W < 2 || H < 2) return null;
+            const s = escala || 2;
+            const cv = document.createElement('canvas');
+            cv.width = W * escala; cv.height = H * escala;
+            const ctx = cv.getContext('2d');
+            ctx.scale(escala, escala);
+            ctx.fillStyle = '#0a1a3a';
+            ctx.fillRect(0, 0, W, H);
+            const desenhar = (node) => {
+                const b = node.getBoundingClientRect();
+                if (b.width === 0 || b.height === 0) return;
+                try { ctx.drawImage(node, b.left - r.left, b.top - r.top, b.width, b.height); }
+                catch (e) { console.warn('mapa: falha ao desenhar', e); }
+            };
+            el.querySelectorAll('img.leaflet-tile').forEach(img => {
+                if (img.complete && img.naturalWidth > 0) desenhar(img);
+            });
+            el.querySelectorAll('canvas').forEach(cv2 => desenhar(cv2));
+            return cv;
+        }
+
         function comporA4(partes, titulo) {
             const W = 1240, H = 1754;
             const out = document.createElement('canvas');
@@ -5710,7 +5739,7 @@
                     } catch (e) {}
                     setTimeout(fim, 4000);
                 });
-                const cMapa = await capturarComposta(['#geoMapCard'], null);
+                const cMapa = capturarMapaCanvas(2);
                 const cTab = await capturarComposta(['#page-cidade .right-panel .table-container'], null);
                 capturas[5] = comporA4([cMapa, cTab], 'Foto 6 - Mapa de calor SP e Regioes | 热力图');
             } catch (e) { console.error('Foto 6 (mapa) falhou:', e); }
