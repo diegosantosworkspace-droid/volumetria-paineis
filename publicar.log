@@ -4726,3 +4726,28 @@
 [2026-10-13 15:47:41] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      3175066..dd69e1a  HEAD -> main
 [2026-10-13 15:47:42] publicar_site: concluido com sucesso.
 [2026-10-13 15:49:40] publicar_site: arquivos alterados detectados:  M publicar.log, M sp1/index.html, M sp2/index.html, M sp4/index.html, M sp5/index.html, M sp6/index.html, M sp8/index.html
+[2026-10-13 15:49:41]   git: [main 50916d1] painels atualizados em 13/10/2026 15:49:41 via publicar_site
+[2026-10-13 15:49:41]   git:  7 files changed, 911 insertions(+), 106 deletions(-)
+[2026-10-13 15:49:43] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      dd69e1a..50916d1  HEAD -> main
+[2026-10-13 15:49:43] publicar_site: concluido com sucesso.
+[2026-10-13 15:51:32] publicar_site: nada mudou; sem push.
+[2026-10-13 15:53:28] publicar_site: nada mudou; sem push.
+[2026-10-13 15:55:29] publicar_site: nada mudou; sem push.
+[2026-10-13 15:57:29] publicar_site: nada mudou; sem push.
+[2026-10-13 15:59:31] publicar_site: nada mudou; sem push.
+[2026-10-13 16:01:34] publicar_site: nada mudou; sem push.
+[2026-10-13 16:03:30] publicar_site: nada mudou; sem push.
+[2026-10-13 16:05:29] publicar_site: nada mudou; sem push.
+[2026-10-13 16:07:29] publicar_site: nada mudou; sem push.
+[2026-10-13 16:09:36] publicar_site: nada mudou; sem push.
+[2026-10-13 16:11:42] publicar_site: nada mudou; sem push.
+[2026-10-13 16:13:26] publicar_site: nada mudou; sem push.
+[2026-10-13 16:15:26] publicar_site: nada mudou; sem push.
+[2026-10-13 16:17:36] publicar_site: nada mudou; sem push.
+[2026-10-13 16:19:27] publicar_site: nada mudou; sem push.
+[2026-10-13 16:21:51] publicar_site: nada mudou; sem push.
+[2026-10-13 16:23:30] publicar_site: nada mudou; sem push.
+[2026-10-13 16:25:35] publicar_site: nada mudou; sem push.
+[2026-10-13 16:27:27] publicar_site: nada mudou; sem push.
+[2026-10-13 16:33:57] publicar_site: nada mudou; sem push.
+[2026-10-13 16:50:37] publicar_site: arquivos alterados detectados:  M publicar.log, M sp1/index.html

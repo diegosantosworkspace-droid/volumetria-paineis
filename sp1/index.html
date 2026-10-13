@@ -4097,7 +4097,7 @@
         function carregarGeoCoords() {
             fetch('geo_coords.json')
                 .then(r => r.ok ? r.json() : {})
-                .then(j => { geoCoords = j || {}; if (geoModo === 'regiao' && loadedData) renderGeoMap(dateFilter.value); })
+                .then(j => { geoCoords = j || {}; if (loadedData) renderGeoMap(dateFilter.value); })
                 .catch(() => { geoCoords = {}; });
         }
 
@@ -4121,9 +4121,7 @@
         function renderGeoMap(dateStr) {
             const card = document.getElementById('geoMapCard');
             if (!card || !loadedData) return;
-            const mostrar = (geoModo === 'regiao');
-            card.style.display = mostrar ? 'block' : 'none';
-            if (!mostrar) return;
+            card.style.display = 'block';
             initGeoMap();
             if (!geoMap) return;
             const elMapa = document.getElementById('geoMap');
@@ -4626,7 +4624,7 @@
                 document.getElementById('page-' + btn.dataset.tab).classList.add('active');
                 try { localStorage.setItem('volumetria_aba', btn.dataset.tab); } catch (e) {}
                 if (btn.dataset.tab === 'cidade') {
-                    setTimeout(() => { if (loadedData && geoModo === 'regiao') renderGeoMap(dateFilter.value); }, 80);
+                    setTimeout(() => { if (loadedData) renderGeoMap(dateFilter.value); }, 80);
                 }
             });
         });
