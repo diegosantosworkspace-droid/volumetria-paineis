@@ -5511,7 +5511,7 @@
         // ===== CAPTURA DE TELA (3 FOTOS) E IMPRIMIR =====
         // Captura vários elementos e junta num único canvas (empilhado verticalmente)
         // com um cabeçalho identificando a análise
-        async function capturarComposta(seletores, titulo) {
+        async function capturarComposta(seletores, titulo, optsExtra) {
             if (typeof html2canvas === 'undefined') {
                 throw new Error('Biblioteca html2canvas não carregou. Verifique a internet/CDN e recarregue a página.');
             }
@@ -5549,7 +5549,7 @@
                 const el = document.querySelector(sel);
                 if (!el) continue;
                 if (el.style && el.style.display === 'none') continue;
-                const base = { backgroundColor: '#0052CC', useCORS: true, logging: false, onclone: criarSanitizador(sel) };
+                const base = { backgroundColor: '#0052CC', useCORS: true, logging: false, onclone: criarSanitizador(sel), ...(optsExtra || {}) };
                 const tentativas = [{ ...base, scale: 2 }, { ...base, scale: 1 }];
                 if (el.scrollWidth > 0 && el.offsetParent !== null) tentativas[0].windowWidth = el.scrollWidth;
                 let c = null;
