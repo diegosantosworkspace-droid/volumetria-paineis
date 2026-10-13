@@ -4105,7 +4105,7 @@
             if (geoMap || typeof L === 'undefined') return;
             const el = document.getElementById('geoMap');
             if (!el) return;
-            geoMap = L.map(el, { zoomControl: true, attributionControl: true, preferCanvas: true })
+            geoMap = L.map(el, { zoomControl: true, attributionControl: true, preferCanvas: true, zoomSnap: 0.25 })
                 .setView([-22.4, -48.6], 7);
             geoMap.setMaxBounds([[-25.9, -54.0], [-19.1, -43.5]]);
             L.rectangle([[-25.6, -53.6], [-19.4, -43.9]], {
