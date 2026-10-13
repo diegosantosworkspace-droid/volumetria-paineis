@@ -4123,6 +4123,10 @@
             if (!mostrar) return;
             initGeoMap();
             if (!geoMap) return;
+            const elMapa = document.getElementById('geoMap');
+            if (!elMapa || elMapa.offsetWidth === 0 || elMapa.offsetHeight === 0) {
+                return; // aba oculta: redesenha quando a aba abrir
+            }
             geoMap.invalidateSize();
 
             const rows = filterRecords(loadedData.geoRegiaoRows || [], currentPeriod, dateStr);
@@ -4147,11 +4151,12 @@
             if (vazio) vazio.style.display = pontos.length ? 'none' : 'block';
             if (!pontos.length) return;
 
-            geoHeat = L.heatLayer(pontos.map(p => [p.lat, p.lon, p.tot]), {
-                radius: 32, blur: 22, maxZoom: 11, max: maxTotal || 1,
-                gradient: { 0.2: '#1a3a7a', 0.4: '#00b0ff', 0.6: '#00e676', 0.8: '#ffea00', 1.0: '#ff1744' }
-            }).addTo(geoMap);
-
+            try {
+                geoHeat = L.heatLayer(pontos.map(p => [p.lat, p.lon, p.tot]), {
+                    radius: 32, blur: 22, maxZoom: 11, max: maxTotal || 1,
+                    gradient: { 0.2: '#1a3a7a', 0.4: '#00b0ff', 0.6: '#00e676', 0.8: '#ffea00', 1.0: '#ff1744' }
+                }).addTo(geoMap);
+            } catch (e) { console.warn('heat layer falhou:', e); return; }
             const bounds = [];
             pontos.sort((a, b) => b.tot - a.tot).forEach(p => {
                 const rel = p.tot / (maxTotal || 1);
@@ -4617,6 +4622,9 @@
                 document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
                 document.getElementById('page-' + btn.dataset.tab).classList.add('active');
                 try { localStorage.setItem('volumetria_aba', btn.dataset.tab); } catch (e) {}
+                if (btn.dataset.tab === 'cidade') {
+                    setTimeout(() => { if (loadedData && geoModo === 'regiao') renderGeoMap(dateFilter.value); }, 80);
+                }
             });
         });
         // Restaura a aba que estava ativa (mesmo após F5/reload) — não volta para a 1ª página
