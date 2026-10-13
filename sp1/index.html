@@ -3293,7 +3293,7 @@
     <!-- Modal das fotos para WhatsApp -->
     <div class="fotos-modal" id="fotosModal">
         <div class="fotos-box">
-            <div class="fotos-title">📸 5 fotos geradas | 生成5张照片<br><span style="font-size:12px;color:#e0e0e0;">Baixe ou envie pelo WhatsApp | 下载或通过WhatsApp发送</span></div>
+            <div class="fotos-title">📸 6 fotos geradas | 生成6张照片<br><span style="font-size:12px;color:#e0e0e0;">Baixe ou envie pelo WhatsApp | 下载或通过WhatsApp发送</span></div>
             <div class="fotos-gallery" id="fotosGallery"></div>
             <button type="button" class="tool-btn" style="float:right;" id="btnFecharFotos">Fechar | 关闭</button>
         </div>
@@ -5691,6 +5691,16 @@
                 await new Promise(r => setTimeout(r, 100));
                 capturas[4] = await capturarComposta(['.prog-result-titulo', '#progRef', '#progResumo', '#rotasResultado'], '5 - Programação: Rotas e Veículos | 运力规划');
             } catch (e) { console.error('Foto 5 falhou:', e); }
+            try {
+                const tabCidade = document.querySelector('.tab-btn[data-tab="cidade"]');
+                if (tabCidade) tabCidade.click();
+                const btnReg = document.getElementById('geoModoRegiao');
+                if (btnReg) btnReg.click();
+                await new Promise(r => setTimeout(r, 1400));
+                const cMapa = await capturarComposta(['#geoMapCard'], null);
+                const cTab = await capturarComposta(['#page-cidade .right-panel .table-container'], null);
+                capturas[5] = comporA4([cMapa, cTab], 'Foto 6 - Mapa de calor SP e Regioes | 热力图');
+            } catch (e) { console.error('Foto 6 (mapa) falhou:', e); }
 
             // Restaura a aba que estava ativa antes da captura
             if (tabAtivaAntes) tabAtivaAntes.click();
@@ -5704,16 +5714,18 @@
                 'volumetria_2_sacas_' + data + '.png',
                 'volumetria_3_hora_' + data + '.png',
                 'volumetria_4_sacas_divisor_' + data + '.png',
-                'volumetria_5_programacao_' + data + '.png'
+                'volumetria_5_programacao_' + data + '.png',
+                'volumetria_6_mapa_sp_' + data + '.png'
             ];
             const titulos = [
                 'Foto 1 - Volumetria por DS | 按站体积',
                 'Foto 2 - Sacas e Volumes | 袋数和体积',
                 'Foto 3 - Análise por Hora | 按小时分析',
                 'Foto 4 - Sacas: Pacotes / Divisor | 袋子分析',
-                'Foto 5 - Programação: Rotas / Veículos | 运力规划'
+                'Foto 5 - Programação: Rotas / Veículos | 运力规划',
+                'Foto 6 - Mapa de calor SP / Regiões | 热力图'
             ];
-            // Garante as 5 fotos: se alguma seção falhou, entra uma marca d'água no lugar
+            // Garante as fotos: se alguma seção falhou, entra uma marca d'água no lugar
             capturas.forEach((c, i) => { if (!c) capturas[i] = fotoMarcaDagua(titulos[i]); });
             const fotos = capturas.map((c, i) => [c, nomes[i], titulos[i]]);
 
@@ -5769,7 +5781,7 @@
         function gerarFotosComFeedback(btnId) {
             const btn = document.getElementById(btnId);
             const origLabel = btn.textContent;
-            btn.textContent = '⏳ Gerando 5 fotos...';
+            btn.textContent = '⏳ Gerando 6 fotos...';
             btn.disabled = true;
             gerarQuatroFotos().then(() => {
                 btn.textContent = origLabel;
