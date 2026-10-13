@@ -4077,3 +4077,11 @@
 [2026-10-12 21:38:23] publicar_site: nada mudou; sem push.
 [2026-10-12 21:39:54] publicar_site: nada mudou; sem push.
 [2026-10-12 21:42:11] publicar_site: arquivos alterados detectados:  M publicar.log, M sp1/index.html,?? sp1/public/vendor/
+[2026-10-12 21:42:45]   git: [main 22badd2] painels atualizados em 12/10/2026 21:42:12 via publicar_site
+[2026-10-12 21:42:45]   git:  5 files changed, 782 insertions(+)
+[2026-10-12 21:42:45]   git:  create mode 100644 sp1/public/vendor/leaflet-heat.js
+[2026-10-12 21:42:45]   git:  create mode 100644 sp1/public/vendor/leaflet.css
+[2026-10-12 21:42:45]   git:  create mode 100644 sp1/public/vendor/leaflet.js
+[2026-10-12 21:43:16] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:187 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      b0fdc34..22badd2  HEAD -> main
+[2026-10-12 21:43:17] publicar_site: concluido com sucesso.
+[2026-10-12 21:45:29] publicar_site: arquivos alterados detectados:  M publicar.log, M sp2/index.html, M sp4/index.html, M sp5/index.html, M sp6/index.html, M sp8/index.html,?? sp2/public/sounds/,?? sp2/public/vendor/,?? sp4/public/sounds/,?? sp4/public/vendor/,?? sp5/public/sounds/,?? sp5/public/vendor/,?? sp6/public/sounds/,?? sp6/public/vendor/,?? sp8/public/sounds/,?? sp8/public/vendor/
