@@ -5725,9 +5725,8 @@
                 const restante = H - 22 - y;
                 if (restante <= 40) break;
                 const ultimo = (i === list.length - 1);
-                let esc = Math.min(1, maxW / p.width);
+                let esc = Math.min(maxW / p.width, restante / p.height);
                 let h = p.height * esc;
-                if (h > restante) { esc = restante / p.height; h = restante; }
                 const w = p.width * esc;
                 ctx.drawImage(p, Math.round((W - w) / 2), Math.round(y), Math.round(w), Math.round(h));
                 y += h + (ultimo ? 0 : 16);
@@ -5819,9 +5818,8 @@
                     } catch (e) {}
                     setTimeout(fim, 4000);
                 });
-                const cMapa = capturarMapaCanvas(2);
-                const cTab = await capturarComposta(['#page-cidade .right-panel .table-container'], null);
-                capturas[5] = comporA4([cMapa, cTab], 'Foto 6 - Mapa de calor SP e Regioes | 热力图');
+                const cMapa = capturarMapaCanvas(4);
+                capturas[5] = comporA4([cMapa], 'Foto 6 - Mapa de calor SP / Regiões | 热力图');
             } catch (e) { console.error('Foto 6 (mapa) falhou:', e); }
 
             // Restaura a aba que estava ativa antes da captura
