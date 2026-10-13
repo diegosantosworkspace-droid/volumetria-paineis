@@ -5641,6 +5641,7 @@
                 try { window.__expN = pontosExp.length; } catch (e) {}
                 pontosExp.forEach(p => {
                     const pt = geoMap.latLngToContainerPoint([p.lat, p.lon]);
+                    if (!window.__expPt0) { try { window.__expPt0 = Math.round(pt.x) + ',' + Math.round(pt.y); } catch (e) {} }
                     const rel = p.tot / (maxT || 1);
                     const rad = 14 + 30 * Math.sqrt(rel);
                     const rgb = rel > 0.6 ? '255,23,68' : rel > 0.3 ? '255,171,0' : '0,176,255';
@@ -5666,6 +5667,7 @@
                 ctx.strokeRect(p1.x, p2.y, p2.x - p1.x, p1.y - p2.y);
                 ctx.setLineDash([]);
             }
+            try { window.__lastMap = cv; } catch (e) {}
             return cv;
         }
 
