@@ -5613,6 +5613,11 @@
             ctx.scale(escala, escala);
             ctx.fillStyle = '#0a1a3a';
             ctx.fillRect(0, 0, W, H);
+            // Garante que a origem de projeção do Leaflet bate com o tamanho atual
+            try {
+                geoMap.invalidateSize(false);
+                geoMap.setView(geoMap.getCenter(), geoMap.getZoom(), { animate: false, reset: true });
+            } catch (e) {}
             const desenhar = (node) => {
                 const b = node.getBoundingClientRect();
                 if (b.width === 0 || b.height === 0) return;
