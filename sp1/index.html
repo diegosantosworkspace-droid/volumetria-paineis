@@ -2224,6 +2224,9 @@
         .evol-sort-btn:hover { background: linear-gradient(135deg, #0066E6 0%, #0077f0 100%); }
         .evol-sort-btn.active { border-color: #FFDD00; background: linear-gradient(135deg, #0033A0 0%, #0052CC 100%); box-shadow: 0 0 10px rgba(255, 221, 0, 0.35); }
         .evol-linha { display: grid; grid-template-columns: 1fr; gap: 14px; }
+        #page-cidade .geo-map { width: 100%; height: clamp(300px, 46vh, 480px); border-radius: 10px; background: #0a1a3a; z-index: 0; }
+        #page-cidade #geoMapCard .chart-title { margin-bottom: 10px; }
+        #page-cidade .top-section { margin-top: 16px; }
         #page-evolucao .table-container { width: 100%; margin: 0 0 14px; }
         #page-evolucao table { table-layout: auto; width: 100%; }
         #page-evolucao th:first-child, #page-evolucao td:first-child { text-align: left; white-space: nowrap; }
@@ -4103,7 +4106,8 @@
             const el = document.getElementById('geoMap');
             if (!el) return;
             geoMap = L.map(el, { zoomControl: true, attributionControl: true, preferCanvas: true })
-                .setView([-23.55, -46.63], 8);
+                .setView([-22.4, -48.6], 7);
+            geoMap.setMaxBounds([[-25.8, -53.8], [-19.2, -43.6]]);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19, attribution: '&copy; OpenStreetMap'
             }).addTo(geoMap);
@@ -4130,6 +4134,9 @@
             Object.entries(porReg).forEach(([reg, tot]) => {
                 const c = geoCoords && geoCoords[reg];
                 if (!c || tot <= 0) return;
+                const dentroSP = c.uf === 'SP' ||
+                    (c.lat <= -19.4 && c.lat >= -25.6 && c.lon >= -53.6 && c.lon <= -43.9);
+                if (!dentroSP) return;
                 pontos.push({ reg: reg, lat: c.lat, lon: c.lon, tot: tot, cidade: c.cidade });
                 if (tot > maxTotal) maxTotal = tot;
             });
