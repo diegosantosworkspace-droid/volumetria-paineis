@@ -4028,12 +4028,19 @@
             const porGrupo = {};
             rows.forEach(r => {
                 const k = r[chave];
-                const g = porGrupo[k] || { pacotes: 0, sacas: 0, total: 0 };
+                const g = porGrupo[k] || { pacotes: 0, sacas: 0, total: 0, ceps: {} };
                 if (r.produto === 'Pacote') g.pacotes += r.qty;
                 else if (r.produto === 'Saca') g.sacas += r.qty;
                 g.total += r.qty;
+                if (r.cep) g.ceps[r.cep] = (g.ceps[r.cep] || 0) + r.qty;
                 porGrupo[k] = g;
             });
+            const cepDe = (g) => {
+                const e = Object.entries(g.ceps || {});
+                if (!e.length) return '';
+                e.sort((a, b) => b[1] - a[1]);
+                return e[0][0];
+            };
 
             let totalGeral = 0;
             Object.values(porGrupo).forEach(v => totalGeral += v.total);
@@ -4061,10 +4068,14 @@
             bodyEl.innerHTML = '';
             arr.forEach(([k, v]) => {
                 const pct = totalGeral > 0 ? (v.total / totalGeral * 100) : 0;
-                bodyEl.innerHTML += '<tr><td>' + esc(k) + '</td>' +
+                const cep = ehRegiao ? '' : cepDe(v);
+                const rot = ehRegiao
+                    ? (esc(k) + '<br><span style="font-size:11px;color:#8fa2d4;">CEP ' + esc(k) + 'xxx</span>')
+                    : (esc(k) + (cep ? '<br><span style="font-size:11px;color:#8fa2d4;">CEP ' + esc(cep) + '</span>' : ''));
+                bodyEl.innerHTML += '<tr><td>' + rot + '</td>' +
                     '<td>' + fmt(v.pacotes) + '</td><td>' + fmt(v.sacas) + '</td>' +
                     '<td>' + fmt(v.total) + '</td>' +
-                    '<td>' + pct.toFixed(1).replace('.', ',') + '%</td></tr>';
+                    '<td>' + pct.toFixed(1).replace('.', ',') + '</td></tr>';
             });
 
             if (totalEl) totalEl.textContent = fmt(totalGeral);
@@ -4078,8 +4089,9 @@
                 const arr2 = Object.entries(porGrupo).filter(([, v]) => v.total > 0).sort((a, b) => b[1].total - a[1].total);
                 if (arr2.length) {
                     arr2.forEach(([k, v]) => {
+                        const cep = ehRegiao ? ('CEP ' + k + 'xxx') : cepDe(v);
                         listEl.innerHTML += '<span class="nao-chip" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;">' +
-                            '<b>' + esc(k) + '</b>' +
+                            '<b>' + esc(k) + (cep ? ' <span style="color:#8fa2d4;font-weight:400;">' + esc(cep) + '</span>' : '') + '</b>' +
                             '<em>' + fmt(v.sacas) + ' sacas · ' + fmt(v.pacotes) + ' pacotes · ' + fmt(v.total) + '</em></span>';
                     });
                 } else {
@@ -4097,7 +4109,7 @@
         function carregarGeoCoords() {
             fetch('geo_coords.json')
                 .then(r => r.ok ? r.json() : {})
-                .then(j => { geoCoords = j || {}; if (geoModo === 'regiao' && loadedData) renderGeoMap(dateFilter.value); })
+                .then(j => { geoCoords = j || {}; if (loadedData) renderGeoMap(dateFilter.value); })
                 .catch(() => { geoCoords = {}; });
         }
 
@@ -4121,9 +4133,7 @@
         function renderGeoMap(dateStr) {
             const card = document.getElementById('geoMapCard');
             if (!card || !loadedData) return;
-            const mostrar = (geoModo === 'regiao');
-            card.style.display = mostrar ? 'block' : 'none';
-            if (!mostrar) return;
+            card.style.display = 'block';
             initGeoMap();
             if (!geoMap) return;
             const elMapa = document.getElementById('geoMap');
@@ -4535,8 +4545,9 @@
                     Object.entries(pd.cidades || {}).forEach(([cidade, obj]) => {
                         const npac = obj['Pacote'] || 0;
                         const nsac = obj['Saca'] || 0;
-                        if (npac > 0) geoCidadeRows.push({ cidade, produto: 'Pacote', date: d, qty: npac });
-                        if (nsac > 0) geoCidadeRows.push({ cidade, produto: 'Saca', date: d, qty: nsac });
+                        const cep = obj.cep || '';
+                        if (npac > 0) geoCidadeRows.push({ cidade, cep, produto: 'Pacote', date: d, qty: npac });
+                        if (nsac > 0) geoCidadeRows.push({ cidade, cep, produto: 'Saca', date: d, qty: nsac });
                     });
                     Object.entries(pd.regioes || {}).forEach(([regiao, obj]) => {
                         const npac = obj['Pacote'] || 0;
@@ -4626,7 +4637,7 @@
                 document.getElementById('page-' + btn.dataset.tab).classList.add('active');
                 try { localStorage.setItem('volumetria_aba', btn.dataset.tab); } catch (e) {}
                 if (btn.dataset.tab === 'cidade') {
-                    setTimeout(() => { if (loadedData && geoModo === 'regiao') renderGeoMap(dateFilter.value); }, 80);
+                    setTimeout(() => { if (loadedData) renderGeoMap(dateFilter.value); }, 80);
                 }
             });
         });
