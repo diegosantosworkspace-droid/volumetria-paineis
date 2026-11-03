@@ -8678,3 +8678,28 @@
 [2026-11-02 22:58:53] publicar_site: nada mudou; sem push.
 [2026-11-02 23:00:39] publicar_site: nada mudou; sem push.
 [2026-11-02 23:01:10] publicar_site: arquivos alterados detectados:  M publicar.log, M publicar_site.ps1,?? sp1/geo_coords.json,?? sp2/geo_coords.json,?? sp4/geo_coords.json,?? sp5/geo_coords.json,?? sp6/geo_coords.json,?? sp8/geo_coords.json
+[2026-11-02 23:01:11]   git: [main 2d49de6] painels atualizados em 02/11/2026 23:01:10 via publicar_site
+[2026-11-02 23:01:11]   git:  8 files changed, 2895 insertions(+)
+[2026-11-02 23:01:11]   git:  create mode 100644 sp1/geo_coords.json
+[2026-11-02 23:01:11]   git:  create mode 100644 sp2/geo_coords.json
+[2026-11-02 23:01:11]   git:  create mode 100644 sp4/geo_coords.json
+[2026-11-02 23:01:11]   git:  create mode 100644 sp5/geo_coords.json
+[2026-11-02 23:01:11]   git:  create mode 100644 sp6/geo_coords.json
+[2026-11-02 23:01:11]   git:  create mode 100644 sp8/geo_coords.json
+[2026-11-02 23:01:33] publicar_site: push: git.exe : fatal: unable to access 'https://github.com/diegosantosworkspace-droid/volumetria-paineis.git/': Failed to  connect to github.com port 443 after 21655 ms: Could not connect to server No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:191 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (fatal: unable t...nnect to server:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError
+[2026-11-02 23:01:33] publicar_site: concluido com sucesso.
+[2026-11-02 23:01:43] publicar_site: nada mudou; sem push.
+[2026-11-02 23:03:39] publicar_site: nada mudou; sem push.
+[2026-11-02 23:05:39] publicar_site: nada mudou; sem push.
+[2026-11-02 23:07:39] publicar_site: nada mudou; sem push.
+[2026-11-02 23:09:40] publicar_site: nada mudou; sem push.
+[2026-11-02 23:11:43] publicar_site: nada mudou; sem push.
+[2026-11-02 23:13:49] publicar_site: nada mudou; sem push.
+[2026-11-02 23:15:48] publicar_site: nada mudou; sem push.
+[2026-11-02 23:17:43] publicar_site: nada mudou; sem push.
+[2026-11-02 23:20:00] publicar_site: nada mudou; sem push.
+[2026-11-02 23:21:46] publicar_site: nada mudou; sem push.
+[2026-11-02 23:23:46] publicar_site: nada mudou; sem push.
+[2026-11-02 23:25:40] publicar_site: nada mudou; sem push.
+[2026-11-02 23:27:50] publicar_site: nada mudou; sem push.
+[2026-11-02 23:29:47] publicar_site: arquivos alterados detectados:  M publicar.log
