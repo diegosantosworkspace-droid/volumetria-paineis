@@ -93,6 +93,10 @@ foreach ($r in $rdcs) {
     if (Test-Path $json) {
         Copy-Item $json (Join-Path $dest 'dados_volumetria.json') -Force
     }
+    $geo = Join-Path $r.dir 'geo_coords.json'
+    if (Test-Path $geo) {
+        Copy-Item $geo (Join-Path $dest 'geo_coords.json') -Force
+    }
     $prog = Join-Path $r.dir 'programacao.json'
     if (Test-Path $prog) {
         Copy-Item $prog (Join-Path $dest 'programacao.json') -Force
