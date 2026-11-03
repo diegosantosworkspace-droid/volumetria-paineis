@@ -8703,3 +8703,11 @@
 [2026-11-02 23:25:40] publicar_site: nada mudou; sem push.
 [2026-11-02 23:27:50] publicar_site: nada mudou; sem push.
 [2026-11-02 23:29:47] publicar_site: arquivos alterados detectados:  M publicar.log
+[2026-11-02 23:29:47]   git: [main 621ed13] painels atualizados em 02/11/2026 23:29:47 via publicar_site
+[2026-11-02 23:29:47]   git:  1 file changed, 25 insertions(+)
+[2026-11-02 23:30:10] publicar_site: push: git.exe : fatal: unable to access 'https://github.com/diegosantosworkspace-droid/volumetria-paineis.git/': Failed to  connect to github.com port 443 after 21612 ms: Could not connect to server No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:191 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (fatal: unable t...nnect to server:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError
+[2026-11-02 23:30:10] publicar_site: concluido com sucesso.
+[2026-11-02 23:31:43] publicar_site: nada mudou; sem push.
+[2026-11-02 23:33:56] publicar_site: nada mudou; sem push.
+[2026-11-02 23:35:57] publicar_site: nada mudou; sem push.
+[2026-11-02 23:37:51] publicar_site: arquivos alterados detectados:  M publicar.log
