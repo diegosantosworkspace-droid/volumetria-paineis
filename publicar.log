@@ -10036,3 +10036,16 @@
 [2026-11-10 19:29:27] publicar_site: nada mudou; sem push.
 [2026-11-10 19:31:58] publicar_site: nada mudou; sem push.
 [2026-11-10 19:33:22] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp1/dados_volumetria.json, M sp2/dados_volumetria.json
+[2026-11-10 19:33:22]   git: [main 280d14f] painels atualizados em 10/11/2026 19:33:22 via publicar_site
+[2026-11-10 19:33:22]   git:  4 files changed, 17 insertions(+), 3 deletions(-)
+[2026-11-10 19:33:24] publicar_site: push: git.exe : remote: Invalid username or token. Password authentication is not supported for Git operations. No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_SITE\publicar_site.ps1:191 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (remote: Invalid...Git operations.:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError   fatal: Authentication failed for 'https://github.com/diegosantosworkspace-droid/volumetria-paineis.git/'
+[2026-11-10 19:33:24] publicar_site: concluido com sucesso.
+[2026-11-10 19:34:20] publicar_site: nada mudou; sem push.
+[2026-11-10 19:36:37] publicar_site: nada mudou; sem push.
+[2026-11-10 19:38:37] publicar_site: nada mudou; sem push.
+[2026-11-10 19:40:41] publicar_site: nada mudou; sem push.
+[2026-11-10 19:42:33] publicar_site: nada mudou; sem push.
+[2026-11-10 19:43:41] publicar_site: nada mudou; sem push.
+[2026-11-10 19:49:52] publicar_site: nada mudou; sem push.
+[2026-11-10 19:50:52] publicar_site: nada mudou; sem push.
+[2026-11-10 19:52:25] publicar_site: arquivos alterados detectados:  M index.html, M publicar.log, M sp2/dados_volumetria.json
