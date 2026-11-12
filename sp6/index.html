@@ -3139,6 +3139,7 @@
                     <span>%</span>
                 </div>
                 <div style="display:flex;gap:8px;">
+                    <button type="button" class="tool-btn small" id="btnSalvarProg">💾 Salvar | 保存</button>
                     <button type="button" class="tool-btn small" id="btnExpandRota">✏️ Editar rotas | 编辑路线</button>
                     <button type="button" class="tool-btn small prog-add-btn" id="btnAddRotaResult">➕ Nova Rota | 新路线</button>
                 </div>
@@ -5112,13 +5113,21 @@
                     headers: tokenHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify({ rotas: rotas, veiculos: veiculos, pct: projPct, disp: disp }),
                     cache: 'no-store'
+                }).then(function (r) { return r.json(); }).then(function (d) {
+                    if (d && d.ok) { _progVersao = JSON.stringify(d); }
                 }).catch(function () {});
             }, 600);
         }
-        function progAplicarServidor() {
+        // Controle de versão da programação (para detectar mudanças de outras máquinas)
+        let _progVersao = '';
+        function progAplicarServidor(forcar) {
             fetch('/api/programacao', { cache: 'no-store' })
                 .then(function (r) { return r.json(); })
                 .then(function (d) {
+                    const novaVersao = JSON.stringify(d || {});
+                    // Se nada mudou no servidor, não re-renderiza (evita flicker)
+                    if (!forcar && novaVersao === _progVersao) return;
+                    _progVersao = novaVersao;
                     if (d && Array.isArray(d.rotas) && d.rotas.length) {
                         rotas = d.rotas;
                         veiculos = (Array.isArray(d.veiculos) && d.veiculos.length)
@@ -5133,8 +5142,7 @@
                         localStorage.setItem(PROG_KEY + '_pct', projPct);
                         syncProjPctUI();
                     } else {
-                        // Servidor sem programação: mantém a aba VAZIA (RDC sem
-                        // configuração não herda rotas/frota de outro RDC).
+                        // Servidor sem programação: mantém a aba VAZIA.
                         rotas = [];
                         veiculos = [];
                         projPct = 0;
@@ -5144,7 +5152,6 @@
                         localStorage.setItem(PROG_KEY + '_pct', String(projPct));
                         localStorage.setItem(PROG_KEY + '_disp', JSON.stringify(disp));
                         syncProjPctUI();
-                        progPostar();
                     }
                     renderProgramacao();
                 })
@@ -5498,6 +5505,18 @@
             const d = document.querySelector('.prog-collapse');
             if (d) d.open = !d.open;
         });
+        const btnSalvarProg = document.getElementById('btnSalvarProg');
+        if (btnSalvarProg) {
+            btnSalvarProg.addEventListener('click', function () {
+                salvarProg();
+                // força POST imediato (sem debounce) para o servidor
+                clearTimeout(_progPostTimer);
+                _progPostTimer = null;
+                progPostar();
+                btnSalvarProg.textContent = '✓ Salvo | 已保存';
+                setTimeout(() => { btnSalvarProg.textContent = '💾 Salvar | 保存'; }, 1800);
+            });
+        }
 
         // Projeção de expedição: recalcula TODAS as rotas ao digitar
         const progPctInput = document.getElementById('progPct');
@@ -5517,7 +5536,9 @@
         document.getElementById('btnAddRotaResult').addEventListener('click', progAddRota);
 
         renderProgramacao();
-        progAplicarServidor();
+        progAplicarServidor(true);
+        // Polling: a cada 15s verifica se outra máquina alterou a programação
+        setInterval(function () { progAplicarServidor(false); }, 15000);
 
         // ===== CAPTURA DE TELA (3 FOTOS) E IMPRIMIR =====
         // Captura vários elementos e junta num único canvas (empilhado verticalmente)
