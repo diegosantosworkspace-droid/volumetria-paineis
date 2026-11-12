@@ -5551,7 +5551,9 @@
                     // rolagem duplicam o conteúdo por cima das linhas da tabela.
                     const st = doc.createElement('style');
                     st.textContent = 'thead,th{position:static!important}'
-                        + '.table-wrapper,.table-container,.evol-scroll{table-layout:fixed;overflow:visible!important}';
+                        + '.table-wrapper,.table-container,.evol-scroll{table-layout:fixed;overflow:visible!important}'
+                        + '.flip3d-back,.flip3d-face.flip3d-back{display:none!important}'
+                        + '.flip3d-inner,.flip3d{transform:none!important}';
                     doc.head.appendChild(st);
                 };
             }
@@ -5758,6 +5760,16 @@
             return cv;
         }
 
+        async function copiarFoto(canvas, nome) {
+            try {
+                const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+                if (navigator.clipboard && window.ClipboardItem) {
+                    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                    return true;
+                }
+            } catch (e) { console.warn('clipboard falhou:', e); }
+            return false;
+        }
         function baixarFoto(canvas, nome) {
             const link = document.createElement('a');
             link.download = nome;
@@ -5874,6 +5886,15 @@
                 item.appendChild(img);
                 const actions = document.createElement('div');
                 actions.className = 'foto-actions';
+                const bc = document.createElement('button');
+                bc.type = 'button';
+                bc.className = 'tool-btn';
+                bc.textContent = 'Copiar | 复制';
+                bc.addEventListener('click', async () => {
+                    const ok = await copiarFoto(canvas, nome);
+                    bc.textContent = ok ? 'Copiado! | 已复制' : 'Falha ao copiar';
+                    setTimeout(() => { bc.textContent = 'Copiar | 复制'; }, 1800);
+                });
                 const b = document.createElement('button');
                 b.type = 'button';
                 b.className = 'tool-btn';
@@ -5883,18 +5904,14 @@
                 n.className = 'foto-name';
                 n.textContent = nome;
                 actions.appendChild(n);
+                actions.appendChild(bc);
                 actions.appendChild(b);
                 item.appendChild(actions);
                 gallery.appendChild(item);
             });
             document.getElementById('fotosModal').classList.add('open');
 
-            // Baixa automaticamente as fotos geradas, em sequência
-            let delay = 0;
-            fotos.forEach(([canvas, nome]) => {
-                setTimeout(() => { try { baixarFoto(canvas, nome); } catch (e) { console.error('Download falhou:', e); } }, delay);
-                delay += 350;
-            });
+            // (download automático removido: use o botão Copiar/Baixar de cada foto)
         }
 
         document.getElementById('btnPrintPng').addEventListener('click', () => {
