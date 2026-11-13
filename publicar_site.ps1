@@ -101,6 +101,16 @@ foreach ($r in $rdcs) {
     if (Test-Path $prog) {
         Copy-Item $prog (Join-Path $dest 'programacao.json') -Force
     }
+    # Sincronizacao bidirecional do programacao.json: se o site (GitHub) tiver
+    # versao mais recente, copia de volta para o RDC (outra maquina publicou).
+    $destProg = Join-Path $dest 'programacao.json'
+    $srcProg = $prog
+    if (Test-Path $destProg) {
+        if (-not (Test-Path $srcProg) -or (Get-Item $destProg).LastWriteTime -gt (Get-Item $srcProg).LastWriteTime) {
+            Copy-Item $destProg $srcProg -Force
+            Log ('publicar_site: programacao.json atualizado de GitHub -> ' + $r.cod)
+        }
+    }
     if (Test-Path $pub) {
         $destPub = Join-Path $dest 'public'
         New-Item -ItemType Directory -Path $destPub -Force | Out-Null
@@ -173,6 +183,12 @@ Set-Location $site
 if (-not (Test-Path (Join-Path $site '.git'))) {
     Log 'publicar_site: sem .git local; rode github_configurar.ps1 antes.'
     exit 0
+}
+
+# --- Pull primeiro: traz mudancas do GitHub (outra maquina pode ter publicado) ---
+$pullOut = & git pull --rebase origin HEAD 2>&1 | Out-String
+if ($pullOut -notmatch 'Already up to date') {
+    Log ('publicar_site: pull: ' + (($pullOut -replace "`n",' ').Trim()))
 }
 $statusOut = & git status --porcelain 2>&1
 $statusErro = $statusOut | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] }
