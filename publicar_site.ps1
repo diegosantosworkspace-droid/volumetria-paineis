@@ -103,21 +103,59 @@ foreach ($r in $rdcs) {
     # compara mtimes ANTES de copiar; copia o mais recente sobre o mais antigo.
     $srcExists = Test-Path $prog
     $dstExists = Test-Path $destProg
+    # Funcao para saber se um programacao.json tem dados
+    function Tem-DadosProg($p) {
+        if (-not (Test-Path $p)) { return $false }
+        try {
+            $o = Get-Content $p -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($o.rotas -and @($o.rotas).Count -gt 0) { return $true }
+            if ($o.veiculos -and @($o.veiculos).Count -gt 0) { return $true }
+            return $false
+        } catch { return $false }
+    }
+    $srcTem = Tem-DadosProg $prog
+    $dstTem = Tem-DadosProg $destProg
+    # Prioridade: quem tem dados ganha; depois updatedAt; depois mtime.
+    $copiarSrcParaDst = $false
+    $copiarDstParaSrc = $false
     if ($srcExists -and $dstExists) {
-        $srcMt = (Get-Item $prog).LastWriteTime
-        $dstMt = (Get-Item $destProg).LastWriteTime
-        if ($dstMt -gt $srcMt) {
-            Copy-Item $destProg $prog -Force
-            Log ('publicar_site: programacao.json GitHub -> ' + $r.cod + ' (GitHub mais novo)')
-        } elseif ($srcMt -gt $dstMt) {
-            Copy-Item $prog $destProg -Force
-            Log ('publicar_site: programacao.json ' + $r.cod + ' -> GitHub (local mais novo)')
+        if ($srcTem -and -not $dstTem) { $copiarSrcParaDst = $true }
+        elseif ($dstTem -and -not $srcTem) { $copiarDstParaSrc = $true }
+        elseif ($srcTem -and $dstTem) {
+            # ambos tem dados: compara updatedAt, depois mtime
+            try {
+                $srcO = Get-Content $prog -Raw -Encoding UTF8 | ConvertFrom-Json
+                $dstO = Get-Content $destProg -Raw -Encoding UTF8 | ConvertFrom-Json
+                $srcU = if ($srcO.updatedAt) { $srcO.updatedAt } else { '' }
+                $dstU = if ($dstO.updatedAt) { $dstO.updatedAt } else { '' }
+                if ($srcU -and $dstU) {
+                    if ($dstU -gt $srcU) { $copiarDstParaSrc = $true }
+                    elseif ($srcU -gt $dstU) { $copiarSrcParaDst = $true }
+                } else {
+                    $srcMt = (Get-Item $prog).LastWriteTime
+                    $dstMt = (Get-Item $destProg).LastWriteTime
+                    if ($dstMt -gt $srcMt) { $copiarDstParaSrc = $true }
+                    elseif ($srcMt -gt $dstMt) { $copiarSrcParaDst = $true }
+                }
+            } catch {
+                $srcMt = (Get-Item $prog).LastWriteTime
+                $dstMt = (Get-Item $destProg).LastWriteTime
+                if ($dstMt -gt $srcMt) { $copiarDstParaSrc = $true }
+                elseif ($srcMt -gt $dstMt) { $copiarSrcParaDst = $true }
+            }
         }
     } elseif ($srcExists -and -not $dstExists) {
-        Copy-Item $prog $destProg -Force
+        $copiarSrcParaDst = $true
     } elseif ($dstExists -and -not $srcExists) {
+        $copiarDstParaSrc = $true
+    }
+    if ($copiarDstParaSrc) {
         Copy-Item $destProg $prog -Force
-        Log ('publicar_site: programacao.json GitHub -> ' + $r.cod + ' (criado)')
+        Log ('publicar_site: programacao.json GitHub -> ' + $r.cod + ' (GitHub mais novo/com dados)')
+    }
+    if ($copiarSrcParaDst) {
+        Copy-Item $prog $destProg -Force
+        Log ('publicar_site: programacao.json ' + $r.cod + ' -> GitHub (local mais novo/com dados)')
     }
     if (Test-Path $pub) {
         $destPub = Join-Path $dest 'public'
