@@ -10125,3 +10125,12 @@
 [2026-11-12 22:16:36] publicar_site: concluido com sucesso.
 [2026-11-12 22:17:23] publicar_site: pull: git.exe : error: cannot pull with rebase: You have unstaged changes. No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_PROJETO\VOLUMETRIA_SITE\publicar_site.ps1:235 caractere:12 + $pullOut = & git pull --rebase origin HEAD 2>&1 | Out-String +            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (error: cannot p...staged changes.:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError   error: Please commit or stash them.
 [2026-11-12 22:17:23] publicar_site: arquivos alterados detectados:  M publicar.log, M publicar_site.ps1, M sp2/programacao.json
+[2026-11-12 22:17:24]   git: [main 09232ac] painels atualizados em 12/11/2026 22:17:23 via publicar_site
+[2026-11-12 22:17:24]   git:  3 files changed, 55 insertions(+), 11 deletions(-)
+[2026-11-12 22:17:26] publicar_site: push: git.exe : To https://github.com/diegosantosworkspace-droid/volumetria-paineis.git No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_PROJETO\VOLUMETRIA_SITE\publicar_site.ps1:253 caractere:9 + $push = & git push origin HEAD 2>&1 | Out-String +         ~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (To https://gith...ria-paineis.git:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError      1ddab9c..09232ac  HEAD -> main
+[2026-11-12 22:17:26] publicar_site: concluido com sucesso.
+[2026-11-12 22:18:32] publicar_site: programacao.json sp1 -> GitHub (local mais novo/com dados)
+[2026-11-12 22:18:32] publicar_site: programacao.json sp2 -> GitHub (local mais novo/com dados)
+[2026-11-12 22:18:32] publicar_site: programacao.json sp8 -> GitHub (local mais novo/com dados)
+[2026-11-12 22:18:33] publicar_site: pull: git.exe : error: cannot pull with rebase: You have unstaged changes. No C:\Users\IMILE-TI\Desktop\VOLUMETRIA_PROJETO\VOLUMETRIA_SITE\publicar_site.ps1:235 caractere:12 + $pullOut = & git pull --rebase origin HEAD 2>&1 | Out-String +            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     + CategoryInfo          : NotSpecified: (error: cannot p...staged changes.:String) [], RemoteException     + FullyQualifiedErrorId : NativeCommandError   error: Please commit or stash them.
+[2026-11-12 22:18:33] publicar_site: arquivos alterados detectados:  M publicar.log, M sp1/programacao.json, M sp2/programacao.json, M sp8/programacao.json
