@@ -5072,6 +5072,12 @@
         const VEICULOS_PADRAO = [];
         // Frota real disponível para marcar em cada rota
         const VEIC_REAL = ['Fiorino', 'Van', 'HR', 'VUC', '3/4', 'Toco', 'Truck'];
+        // Tipologias fixas com capacidade padrão (flag)
+        const VEIC_TIPOLOGIA = {
+            'VUC': 3100, 'HR': 1800, '3/4': 5100, 'FIORINO': 600,
+            'TRUCK': 10000, 'TOCO': 7700, 'VAN': 1800, 'SEM CUSTO': 0
+        };
+        const VEIC_TIPOLOGIA_OPCOES = ['VUC', 'HR', '3/4', 'FIORINO', 'TRUCK', 'TOCO', 'VAN', 'SEM CUSTO'];
 
         function lerProgJSON(valor) {
             try { return JSON.parse(valor); } catch (e) { return null; }
@@ -5095,6 +5101,7 @@
         }
 
         function salvarProg() {
+            progDirty = true;
             localStorage.setItem(PROG_KEY + '_rotas', JSON.stringify(rotas));
             localStorage.setItem(PROG_KEY + '_veiculos', JSON.stringify(veiculos));
             renderProgramacao();
@@ -5105,22 +5112,27 @@
         // Rotas/veículos ficavam só no localStorage de cada navegador e não subiam
         // para a máquina do servidor. Agora salvamos também em /api/programacao.
         let _progPostTimer = null;
-        function progPostar() {
+        function progPostar(imediato) {
             clearTimeout(_progPostTimer);
-            _progPostTimer = setTimeout(function () {
+            const enviar = function () {
                 fetch('/api/programacao', {
                     method: 'POST',
                     headers: tokenHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify({ rotas: rotas, veiculos: veiculos, pct: projPct, disp: disp }),
                     cache: 'no-store'
                 }).then(function (r) { return r.json(); }).then(function (d) {
-                    if (d && d.ok) { _progVersao = JSON.stringify(d); }
+                    if (d && d.ok) { _progVersao = JSON.stringify(d); progDirty = false; }
                 }).catch(function () {});
-            }, 600);
+            };
+            if (imediato) { enviar(); }
+            else { _progPostTimer = setTimeout(enviar, 600); }
         }
         // Controle de versão da programação (para detectar mudanças de outras máquinas)
         let _progVersao = '';
+        let progDirty = false;
         function progAplicarServidor(forcar) {
+            // Se há alterações locais não salvas no servidor, não sobrescreve.
+            if (progDirty && !forcar) return;
             fetch('/api/programacao', { cache: 'no-store' })
                 .then(function (r) { return r.json(); })
                 .then(function (d) {
@@ -5204,8 +5216,14 @@
         function progDelDestino(i, di) { rotas[i].destinos.splice(di, 1); salvarProg(); }
         function progDelRota(i) { rotas.splice(i, 1); salvarProg(); }
         function progAddRota() { rotas.push({ origem: RDC_CODE, destinos: [''] }); salvarProg(); }
-        function progSetVeicTipo(i, v) { veiculos[i].tipo = v; salvarProg(); }
-        function progSetVeicCap(i, v) { veiculos[i].capacidade = Math.max(1, parseInt(v, 10) || 1); salvarProg(); }
+        function progSetVeicTipo(i, v) {
+            veiculos[i].tipo = v;
+            if (VEIC_TIPOLOGIA[v] !== undefined) {
+                veiculos[i].capacidade = VEIC_TIPOLOGIA[v];
+            }
+            salvarProg();
+        }
+        function progSetVeicCap(i, v) { veiculos[i].capacidade = Math.max(0, parseInt(v, 10) || 0); salvarProg(); }
         function progDelVeic(i) { veiculos.splice(i, 1); salvarProg(); }
         function progAddVeic() { veiculos.push({ tipo: 'Novo Veículo', capacidade: 1000 }); salvarProg(); }
 
@@ -5262,8 +5280,8 @@
             listEl.innerHTML = veiculos.map((v, i) => `
                 <div class="veic-item">
                     <div class="rota-head">
-                        <label>Tipologia <input type="text" value="${esc(v.tipo)}" onchange="progSetVeicTipo(${i}, this.value)"></label>
-                        <label>Capacidade <input type="number" min="1" step="10" value="${v.capacidade}" onchange="progSetVeicCap(${i}, this.value)"></label>
+                        <label>Tipologia <select onchange="progSetVeicTipo(${i}, this.value)">${VEIC_TIPOLOGIA_OPCOES.map(t => '<option value="' + esc(t) + '"' + (v.tipo === t ? ' selected' : '') + '>' + esc(t) + '</option>').join('')}</select></label>
+                        <label>Capacidade <input type="number" min="0" step="10" value="${v.capacidade}" onchange="progSetVeicCap(${i}, this.value)"></label>
                         <button type="button" class="tool-btn small" onclick="progDelVeic(${i})">🗑</button>
                     </div>
                 </div>`).join('');
@@ -5509,10 +5527,8 @@
         if (btnSalvarProg) {
             btnSalvarProg.addEventListener('click', function () {
                 salvarProg();
-                // força POST imediato (sem debounce) para o servidor
-                clearTimeout(_progPostTimer);
-                _progPostTimer = null;
-                progPostar();
+                // POST imediato para o servidor (sem debounce)
+                progPostar(true);
                 btnSalvarProg.textContent = '✓ Salvo | 已保存';
                 setTimeout(() => { btnSalvarProg.textContent = '💾 Salvar | 保存'; }, 1800);
             });
