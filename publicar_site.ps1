@@ -98,18 +98,26 @@ foreach ($r in $rdcs) {
         Copy-Item $geo (Join-Path $dest 'geo_coords.json') -Force
     }
     $prog = Join-Path $r.dir 'programacao.json'
-    if (Test-Path $prog) {
-        Copy-Item $prog (Join-Path $dest 'programacao.json') -Force
-    }
-    # Sincronizacao bidirecional do programacao.json: se o site (GitHub) tiver
-    # versao mais recente, copia de volta para o RDC (outra maquina publicou).
     $destProg = Join-Path $dest 'programacao.json'
-    $srcProg = $prog
-    if (Test-Path $destProg) {
-        if (-not (Test-Path $srcProg) -or (Get-Item $destProg).LastWriteTime -gt (Get-Item $srcProg).LastWriteTime) {
-            Copy-Item $destProg $srcProg -Force
-            Log ('publicar_site: programacao.json atualizado de GitHub -> ' + $r.cod)
+    # Sincronizacao bidirecional do programacao.json:
+    # compara mtimes ANTES de copiar; copia o mais recente sobre o mais antigo.
+    $srcExists = Test-Path $prog
+    $dstExists = Test-Path $destProg
+    if ($srcExists -and $dstExists) {
+        $srcMt = (Get-Item $prog).LastWriteTime
+        $dstMt = (Get-Item $destProg).LastWriteTime
+        if ($dstMt -gt $srcMt) {
+            Copy-Item $destProg $prog -Force
+            Log ('publicar_site: programacao.json GitHub -> ' + $r.cod + ' (GitHub mais novo)')
+        } elseif ($srcMt -gt $dstMt) {
+            Copy-Item $prog $destProg -Force
+            Log ('publicar_site: programacao.json ' + $r.cod + ' -> GitHub (local mais novo)')
         }
+    } elseif ($srcExists -and -not $dstExists) {
+        Copy-Item $prog $destProg -Force
+    } elseif ($dstExists -and -not $srcExists) {
+        Copy-Item $destProg $prog -Force
+        Log ('publicar_site: programacao.json GitHub -> ' + $r.cod + ' (criado)')
     }
     if (Test-Path $pub) {
         $destPub = Join-Path $dest 'public'
